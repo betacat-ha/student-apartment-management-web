@@ -17,43 +17,23 @@
   
   <script lang="ts" setup>
   import { ref } from 'vue'
-  
-  const generateColumns = (length = 10, prefix = 'column-', props?: any) =>
-    Array.from({ length }).map((_, columnIndex) => ({
-      ...props,
-      key: `${prefix}${columnIndex}`,
-      dataKey: `${prefix}${columnIndex}`,
-      title: `Column ${columnIndex}`,
-      width: 150,
-    }))
-  
-  const generateData = (
-    columns: ReturnType<typeof generateColumns>,
-    length = 200,
-    prefix = 'row-'
-  ) =>
-    Array.from({ length }).map((_, rowIndex) => {
-      return columns.reduce(
-        (rowData, column, columnIndex) => {
-          rowData[column.dataKey] = `Row ${rowIndex} - Col ${columnIndex}`
-          return rowData
-        },
-        {
-          id: `${prefix}${rowIndex}`,
-          parentId: null,
-        }
-      )
-    })
-  
-  const columns = generateColumns(10)
-  columns.unshift({
-    key: 'column-n-1',
-    width: 50,
-    title: 'Row No.',
-    cellRenderer: ({ rowIndex }) => `${rowIndex + 1}`,
+  import axios from 'axios'
+
+  const columns = [{
     align: 'center',
-  })
-  const data = generateData(columns, 200)
+    title: '学号'
+  },
+{
+  align: 'center',
+  with: 200,
+  title: '姓名'
+},
+{
+  align: 'center',
+  with: 200,
+  title: '电话'
+}];
+  const data = [];
   
   const cellProps = ({ columnIndex }) => {
     const key = `hovering-col-${columnIndex}`

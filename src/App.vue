@@ -9,6 +9,11 @@ import Admin from './components/Admin.vue'
 
 export default {
   name: 'App',
+  // created: function () {
+  //   axios.get('https://my-json-server.typicode.com/typicode/demo/db').then(response => {
+  //     console.log(response.data)
+  //   })
+  // },
   components: {
     Admin
   }
@@ -16,7 +21,14 @@ export default {
 </script>
 
 <style>
-
+.main {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
 .el-container {
     height: 100%;
   }
@@ -32,7 +44,7 @@ export default {
   } */
 
   .el-main {
-    background-color: #e9eef3; color: #333; text-align: center; line-height: 160px;
+    background-color: #e9eef3; color: #333; text-align: center;
   }
 
   /* .el-menu {
