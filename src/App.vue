@@ -7,6 +7,9 @@
 <script>
 import Admin from './components/Admin.vue'
 
+// axios.defaults.baseURL = "http://localhost:8088"  // 修改默认配置 请求根路径
+// Vue.prototype.$http = axios  // Axios绑定在Vue上面
+
 export default {
   name: 'App',
   // created: function () {

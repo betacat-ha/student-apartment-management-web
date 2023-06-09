@@ -1,58 +1,53 @@
 <template>
-    <div style="height: 400px">
-      <el-auto-resizer>
-        <template #default="{ height, width }">
-          <el-table-v2
-            :columns="columns"
-            :cell-props="cellProps"
-            :class="kls"
-            :data="data"
-            :width="width"
-            :height="height"
-          />
-        </template>
-      </el-auto-resizer>
-    </div>
-  </template>
+  <div style="height: 100%">
+    <el-auto-resizer>
+      <template #default="{ height, width }">
+        <el-table-v2
+          :columns="props.columns"
+          :cell-props="cellProps"
+          :class="kls"
+          :data="props.data"
+          :width="width"
+          :height="height"
+        />
+      </template>
+    </el-auto-resizer>
+  </div>
+</template>
   
   <script lang="ts" setup>
-  import { ref } from 'vue'
-  import axios from 'axios'
+import { ref } from "vue";
 
-  const columns = [{
-    align: 'center',
-    title: '学号'
+// 使用 defineProps 定义组件的 props
+const props = defineProps({
+  data: {
+    type: Array,
+    required: true,
   },
-{
-  align: 'center',
-  with: 200,
-  title: '姓名'
-},
-{
-  align: 'center',
-  with: 200,
-  title: '电话'
-}];
-  const data = [];
-  
-  const cellProps = ({ columnIndex }) => {
-    const key = `hovering-col-${columnIndex}`
-    return {
-      ['data-key']: key,
-      onMouseenter: () => {
-        kls.value = key
-      },
-      onMouseleave: () => {
-        kls.value = ''
-      },
-    }
-  }
-  
-  const kls = ref<string>('')
-  </script>
+  columns: {
+    type: Array,
+    required: true,
+  },
+});
+
+//   const cellProps = ({ columnIndex }) => {
+//     const key = `hovering-col-${columnIndex}`
+//     return {
+//       ['data-key']: key,
+//       onMouseenter: () => {
+//         kls.value = key
+//       },
+//       onMouseleave: () => {
+//         kls.value = ''
+//       },
+//     }
+//   }
+
+const kls = ref<string>("");
+</script>
   
   <style>
-  .hovering-col-0 [data-key='hovering-col-0'],
+/* .hovering-col-0 [data-key='hovering-col-0'],
   .hovering-col-1 [data-key='hovering-col-1'],
   .hovering-col-2 [data-key='hovering-col-2'],
   .hovering-col-3 [data-key='hovering-col-3'],
@@ -70,6 +65,6 @@
     font-weight: bold;
     user-select: none;
     pointer-events: none;
-  }
-  </style>
+  } */
+</style>
   
