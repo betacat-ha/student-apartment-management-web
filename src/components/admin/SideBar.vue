@@ -12,16 +12,24 @@
           <el-icon><UserFilled /></el-icon>
           <span>学生管理</span>
         </template>
-          <el-menu-item index="admin/student-list">学生列表</el-menu-item>
-          <el-menu-item index="1-2">导入导出</el-menu-item>
+          <el-menu-item index="/admin/student-list">学生列表</el-menu-item>
+          <el-menu-item index="/admin/import-export">导入导出</el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="2">
         <template #title>
-          <el-icon><location /></el-icon>
+          <el-icon><PieChart /></el-icon>
           <span>水电管理</span>
         </template>
           <el-menu-item index="2-1">水电用量</el-menu-item>
           <el-menu-item index="2-2">水电账单</el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="3">
+        <template #title>
+          <el-icon><setting /></el-icon>
+          <span>系统管理</span>
+        </template>
+          <el-menu-item index="/admin/building">楼宇管理</el-menu-item>
+          <el-menu-item index="/admin/user">员工管理</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="3" disabled>
         <el-icon><document /></el-icon>
@@ -40,6 +48,7 @@ Document,
 Menu as IconMenu,
 Location,
 Setting,
+PieChart,
 } from '@element-plus/icons-vue'
 const handleOpen = (key: string, keyPath: string[]) => {
 console.log(key, keyPath)

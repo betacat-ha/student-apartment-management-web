@@ -16,7 +16,9 @@ axios.defaults.baseURL = "http://localhost:8088"  // 修改默认配置 请求�
 const app = createApp(App).use(router)
 app.config.globalProperties.$axios = axios
 
-
+app.config.errorHandler = function(error) {
+    console.log("global", error)
+};
 app.use(ElementPlus)
 app.use(router)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
