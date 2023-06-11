@@ -1,0 +1,76 @@
+<template>
+  <el-form
+    ref="loginFormRef"
+    :model="form"
+    label-width="120px"
+    :rules="rules"
+    status-icon
+  >
+    <el-form-item label="用户名" prop="id">
+      <el-input v-model="form.email" />
+    </el-form-item>
+    <el-form-item label="密码" prop="password">
+      <el-input v-model="form.password" />
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm(loginFormRef)"
+        >登录</el-button
+      >
+      <el-link type="primary" @click="forgetPassword" style="margin-left: 8px"
+        >忘记密码？</el-link
+      >
+    </el-form-item>
+  </el-form>
+</template>
+  
+  <script lang="ts" setup>
+import { FormInstance, FormRules, ElLoading, ElMessage } from "element-plus";
+import { nextTick, reactive, ref } from "vue";
+import axios from "axios";
+
+// 表单数据
+const form = reactive({
+  email: "",
+  password: "",
+});
+
+var loading = false;
+
+// 表单规则
+const loginFormRef = ref<FormInstance>();
+const rules = reactive<FormRules>({
+  id: [{ required: true, message: "请输入用户名！", trigger: "blur" }],
+  password: [{ required: true, message: "请输入密码！", trigger: "blur" }],
+});
+
+// 表单提交操作
+const submitForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      //   console.log(form);
+      ElLoading.service({
+        lock: true,
+        text: "登录中...",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      axios.post("http://localhost:8088/api/login", form).then((resp) => {
+        if (resp.data.status != null) {
+            ElMessage('登录失败 - 系统内部错误')
+        } else if (resp.data.code != '200') {
+            ElMessage('登录失败 - ' + resp.data.msg)
+        }
+        
+        ElLoading.service().close
+      });
+    } else {
+      console.log("error submit!");
+    }
+  });
+};
+
+// 忘记密码操作
+function forgetPassword() {
+  console.log("忘记密码啦！");
+}
+</script>
