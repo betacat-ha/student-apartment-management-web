@@ -32,7 +32,7 @@
   </el-row>
 
   <div style="display: flex">
-    <el-button type="primary" :icon="Edit">批量编辑</el-button>
+    <!-- <el-button type="primary" :icon="Edit">批量编辑</el-button> -->
     <el-button type="primary" :icon="Delete">批量删除</el-button>
     <el-button type="primary" :icon="Plus" @click="showDialog = true"
       >添加学生</el-button
@@ -42,7 +42,7 @@
   <br />
 
   <!--添加数据对话框表单-->
-  <el-dialog ref="form" title="编辑学生" v-model="showDialog" width="40%">
+  <el-dialog ref="form" title="编辑学生" v-model="showDialog" width="40%" @closed="dialogClosed">
     <el-form ref="form" :model="stuData" label-width="60px">
       <el-form-item label="学号">
         <el-input v-model="stuData.id"></el-input>
@@ -106,6 +106,7 @@
         <el-select
           v-model="stuData.apartmentId"
           placeholder="请选择"
+          value-key="id"
           style="width: 100%"
         >
           <el-option
@@ -214,9 +215,23 @@ import { onMounted, reactive, ref } from "vue";
 import { Alignment } from "element-plus/es/components/table-v2/src/constants";
 import { ElMessage } from "element-plus";
 
+interface Building {
+    id: number;
+    name: string;
+    apartments: Apartment[];
+}
+
+interface Apartment {
+    id: number;
+    buildingId: number;
+    name: string;
+    students: any;
+}
+
 const tableData = ref<any[]>([]); // 传递给组件的 data 参数
 const showSelection = ref<boolean>(true); // 传递给组件的 showSelection 参数
 const showDialog = ref(false); // 控制对话框的显示与隐藏
+const isEditing = ref(false); // 是否正在编辑
 const stuData = reactive({
   name: "",
   id: "",
@@ -226,7 +241,7 @@ const stuData = reactive({
   phone: "",
   email: "",
   apartmentId: "",
-  buildingData: "",
+  buildingData: {} as Building,
 });
 const pagination = reactive({
   small: false,
@@ -257,11 +272,40 @@ function onEdit(id: number) {
     stuData.gender = matchingData.gender;
     stuData.phone = matchingData.phone;
     stuData.email = matchingData.email;
+    stuData.apartmentId = matchingData.apartmentId;
+    stuData.buildingData = getBuildingFromApartmentId(matchingData.apartmentId, buildingList.value);
+    apartmentList.value = stuData.buildingData.apartments;
+    isEditing.value = true;
     showDialog.value = true;
   } else {
     ElMessage.error('页面数据异常，请刷新页面重试！')
   }
 }
+
+function dialogClosed() {
+  stuData.name = "";
+  stuData.id = "";
+  stuData.className = "";
+  stuData.gender = "";
+  stuData.age = "";
+  stuData.phone = "";
+  stuData.email = "";
+  stuData.apartmentId = "";
+  stuData.buildingData = {} as Building;
+  isEditing.value = false;
+}
+
+// 从宿舍ID中获取楼宇信息
+const getBuildingFromApartmentId = (apartmentId: number, data: Building[]): Building => {
+    for (const building of data) {
+        for (const apartment of building.apartments) {
+            if (apartment.id === apartmentId) {
+                return building;
+            }
+        }
+    }
+    return {} as Building;
+};
 
 // 处理每页显示条数变化
 function handleSizeChange(){
