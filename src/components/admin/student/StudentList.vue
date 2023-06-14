@@ -4,7 +4,7 @@
       <el-form-item label="查询内容">
         <div style="display: inline-flex">
           <el-select v-model="searchStu.type" style="width: 100px">
-            <el-option label="不限" value="0"></el-option>
+            <!-- <el-option label="不限" value="0"></el-option> -->
             <el-option label="学号" value="1"></el-option>
             <el-option label="姓名" value="2"></el-option>
             <el-option label="班级" value="3"></el-option>
@@ -123,7 +123,7 @@
     </el-form>
   </el-dialog>
 
-  <el-table :data="tableData" border stripe height="830">
+  <el-table :data="tableData" border stripe height="370">
     <el-table-column
       :v-if="showSelection"
       type="selection"
@@ -160,7 +160,7 @@
       show-overflow-tooltip
     />
     <el-table-column
-      prop="sex"
+      prop="gender"
       label="性别"
       width="60"
       align="center"
@@ -181,12 +181,24 @@
     />
     <el-table-column align="center" label="操作" width="150">
       <template #default="scope">
-        <el-button type="default" size="small" @click="update(scope.row.id)">编辑</el-button>
+        <el-button type="default" size="small" @click="onEdit(scope.row.id)">编辑</el-button>
         <el-button type="danger" size="small" @click="deleteById(scope.row.id)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
-  <el-pagination background layout="prev, pager, next" :total="1000" />
+  <br />
+  <el-pagination
+      v-model:current-page="pagination.currentPage"
+      v-model:page-size="pagination.pageSize"
+      :page-sizes="[5,10,15,20,30,40]"
+      :small="pagination.small"
+      :disabled="pagination.disabled"
+      :background="pagination.background"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pagination.total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
 </template>
 <script lang="ts" setup>
 import axios from "axios";
@@ -216,7 +228,14 @@ const stuData = reactive({
   apartmentId: "",
   buildingData: "",
 });
-
+const pagination = reactive({
+  small: false,
+  disabled: true,
+  background: false,
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+});
 // 宿舍列表的数据
 const buildingList = ref<any[]>([]);
 const apartmentList = ref<any[]>([]);
@@ -224,19 +243,18 @@ const apartmentList = ref<any[]>([]);
 // 查询表单的数据
 const searchStu = reactive({
   content: "",
-  type: "0",
+  type: "1",
   gender: "0",
 });
 
-function update(id: number) {
+function onEdit(id: number) {
   const matchingData = tableData.value.find(item => item.id === id);
   if (matchingData) {
-    console.log(matchingData); // 匹配的数据对象
     stuData.name = matchingData.name;
     stuData.id = matchingData.id;
     stuData.className = matchingData.className;
     stuData.age = matchingData.age;
-    stuData.gender = matchingData.sex;
+    stuData.gender = matchingData.gender;
     stuData.phone = matchingData.phone;
     stuData.email = matchingData.email;
     showDialog.value = true;
@@ -245,64 +263,94 @@ function update(id: number) {
   }
 }
 
+// 处理每页显示条数变化
+function handleSizeChange(){
+
+}
+
+// 处理当前页码变化
+function handleCurrentChange(){
+  console.log('handleCurrentChange:', pagination.currentPage)
+
+}
+
+// 删除
 function deleteById(id: number) {
-  console.log(id);
+  axios.delete("http://localhost:8088/api/student?id=" + id).then((resp) => {
+    if (resp.data.code != "200") {
+      ElMessage.error("删除失败：" + resp.data.msg)
+    } else {
+      ElMessage.success("删除成功")
+      refreshData();
+    }
+  });
 }
 
+// 查询
 function search() {
-  console.log(searchStu);
+  if (searchStu.content == "" && searchStu.gender == "0") {
+    ElMessage.error("请输入要查询的内容！")
+    return;
+  }
+
+  // TODO: 根据查询条件查询数据
+  axios.get("http://localhost:8088/api/student/search?type=" + searchStu.type 
+  + "&content=" + searchStu.content 
+  + "&gender=" + searchStu.gender).then((resp) => {
+  if (resp.data.code != "200") {
+    ElMessage.error("查询失败：" + resp.data.msg)
+  } else {
+    tableData.value = resp.data.data;
+    ElMessage.success("查询成功")
+  }
+});
 }
 
+// 清空查询条件
 function clear() {
   searchStu.content = "";
   searchStu.gender = "0";
   searchStu.type = "0";
+  refreshData();
 }
 
+// 添加学生
 function add() {
   console.log(stuData);
 }
 
+// 楼宇改变
 function buildingChange() {
   apartmentList.value = stuData.buildingData.apartments;
   stuData.apartmentId = "";
-  console.log(stuData.buildingData);
 }
 
-function onEdit() {
-  console.log("编辑");
+refreshData();
+
+// 刷新数据
+function refreshData(enablePagination: boolean = false) {
+  var getStr = "http://localhost:8088/api/student"
+  if (enablePagination) {
+    getStr += "?page=" + pagination.currentPage + "&size=" + pagination.pageSize
+  }
+  
+
+  // 获取表格数据
+  axios.get(getStr).then((resp) => {
+    showSelection.value = true;
+    if (resp.data.code != "200") {
+      ElMessage.error("获取数据失败：" + resp.data.msg)
+    }
+    tableData.value = resp.data.data;
+  });
+
+  // 获取宿舍数据
+  axios.get("http://localhost:8088/api/building").then((resp) => {
+    if (resp.data.code != "200") {
+      ElMessage.error("获取数据失败：" + resp.data.msg)
+    } else {
+      buildingList.value = resp.data.data;
+    }
+  });
 }
-
-// const fetchData = async () => {
-//   const resp = await $axios.get("/student");
-//     if (resp.data.code != "200") {
-//     console.log("获取数据失败：" + resp.data.msg);
-//   }
-//   tableData.value = resp.data.data;
-// };
-
-// onMounted(() => {
-//   fetchData();
-// });
-
-// 获取表格数据
-axios.get("http://localhost:8088/student").then((resp) => {
-  showSelection.value = true;
-  console.log(resp);
-  if (resp.data.code != "200") {
-    console.log("获取数据失败：" + resp.data.msg);
-  }
-  tableData.value = resp.data.data;
-});
-
-// 获取宿舍数据
-axios.get("http://localhost:8088/api/building").then((resp) => {
-  console.log(resp);
-  if (resp.data.code != "200") {
-    console.log("获取数据失败：" + resp.data.msg);
-  } else {
-    console.log(resp.data.data);
-    buildingList.value = resp.data.data;
-  }
-});
 </script>
