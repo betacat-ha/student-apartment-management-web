@@ -4,9 +4,9 @@
     :model="form"
     label-width="120px"
     :rules="rules"
-    status-icon
+    @keyup.enter.native="submitForm(loginFormRef)"
   >
-    <el-form-item label="用户名" prop="id">
+    <el-form-item label="用户名" prop="email">
       <el-input v-model="form.email" />
     </el-form-item>
     <el-form-item label="密码" prop="password">
@@ -26,6 +26,7 @@
   <script lang="ts" setup>
 import { FormInstance, FormRules, ElLoading, ElMessage } from "element-plus";
 import { nextTick, reactive, ref } from "vue";
+import  router  from "../router";
 import axios from "axios";
 
 // 表单数据
@@ -39,7 +40,7 @@ var loading = false;
 // 表单规则
 const loginFormRef = ref<FormInstance>();
 const rules = reactive<FormRules>({
-  id: [{ required: true, message: "请输入用户名！", trigger: "blur" }],
+  email: [{ required: true, message: "请输入用户名！", trigger: "blur" }],
   password: [{ required: true, message: "请输入密码！", trigger: "blur" }],
 });
 
@@ -57,11 +58,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       axios.post("http://localhost:8088/api/login", form).then((resp) => {
         if (resp.data.status != null) {
             ElMessage('登录失败 - 系统内部错误')
+            ElLoading.service().close
+            return;
         } else if (resp.data.code != '200') {
             ElMessage('登录失败 - ' + resp.data.msg)
+            ElLoading.service().close
+            return;
         }
-        
         ElLoading.service().close
+        const {accessToken, userName} = resp.data.data
+        localStorage.setItem('token', accessToken)
+        localStorage.setItem('userName', userName)
+        router.push('/admin')
       });
     } else {
       console.log("error submit!");
