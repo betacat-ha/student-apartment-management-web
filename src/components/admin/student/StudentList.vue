@@ -42,7 +42,7 @@
   <br />
 
   <!--添加数据对话框表单-->
-  <el-dialog ref="form" title="编辑学生" v-model="showDialog" width="40%" @closed="dialogClosed">
+  <el-dialog ref="form" :title="isEditing ? '编辑学生' : '添加学生'" v-model="showDialog" width="40%" @closed="dialogClosed">
     <el-form ref="form" :model="stuData" label-width="60px">
       <el-form-item label="学号">
         <el-input v-model="stuData.id"></el-input>
@@ -65,8 +65,8 @@
           placeholder="请选择"
           style="width: 100%"
         >
-          <el-option label="男" value="1" />
-          <el-option label="女" value="2" />
+          <el-option label="男" value="男" />
+          <el-option label="女" value="女" />
         </el-select>
       </el-form-item>
 
@@ -118,7 +118,7 @@
         </el-select>
       </el-form-item>
       <div>
-        <el-button type="primary" @click="add">提交</el-button>
+        <el-button type="primary" @click="onSubmit">提交</el-button>
         <el-button @click="showDialog = false">取消</el-button>
       </div>
     </el-form>
@@ -241,6 +241,7 @@ const stuData = reactive({
   phone: "",
   email: "",
   apartmentId: "",
+  status: "",
   buildingData: {} as Building,
 });
 const pagination = reactive({
@@ -274,6 +275,7 @@ function onEdit(id: number) {
     stuData.email = matchingData.email;
     stuData.apartmentId = matchingData.apartmentId;
     stuData.buildingData = getBuildingFromApartmentId(matchingData.apartmentId, buildingList.value);
+    stuData.status = matchingData.status;
     apartmentList.value = stuData.buildingData.apartments;
     isEditing.value = true;
     showDialog.value = true;
@@ -358,9 +360,17 @@ function clear() {
   refreshData();
 }
 
-// 添加学生
-function add() {
-  console.log(stuData);
+// 提交学生数据
+function onSubmit() {
+  axios.post("http://localhost:8088/api/student", stuData).then((resp) => {
+    if (resp.data.code != "200") {
+      ElMessage.error("提交失败：" + resp.data.msg)
+    } else {
+      ElMessage.success(resp.data.msg)
+      refreshData();
+      showDialog.value = false;
+    }
+  });
 }
 
 // 楼宇改变
