@@ -43,11 +43,11 @@
 
   <!--添加数据对话框表单-->
   <el-dialog ref="form" :title="isEditing ? '编辑学生' : '添加学生'" v-model="showDialog" width="40%" @closed="dialogClosed">
-    <el-form ref="form" :model="stuData" label-width="60px">
-      <el-form-item label="学号">
+    <el-form ref="editorFormRef" :model="stuData" label-width="60px" :rules="editorRules" @keyup.enter.native="onSubmit(editorFormRef)">
+      <el-form-item label="学号" prop="id">
         <el-input v-model="stuData.id"></el-input>
       </el-form-item>
-      <el-form-item label="姓名">
+      <el-form-item label="姓名" prop="name">
         <el-input v-model="stuData.name"></el-input>
       </el-form-item>
       <el-form-item label="班级">
@@ -59,7 +59,7 @@
       <el-form-item label="邮箱">
         <el-input v-model="stuData.email"></el-input>
       </el-form-item>
-      <el-form-item label="性别">
+      <el-form-item label="性别" prop="gender">
         <el-select
           v-model="stuData.gender"
           placeholder="请选择"
@@ -118,7 +118,7 @@
         </el-select>
       </el-form-item>
       <div>
-        <el-button type="primary" @click="onSubmit">提交</el-button>
+        <el-button type="primary" @click="onSubmit(editorFormRef)">提交</el-button>
         <el-button @click="showDialog = false">取消</el-button>
       </div>
     </el-form>
@@ -213,7 +213,7 @@ import {
 } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import { Alignment } from "element-plus/es/components/table-v2/src/constants";
-import { ElMessage } from "element-plus";
+import { FormInstance, FormRules, ElMessage } from "element-plus";
 
 interface Building {
     id: number;
@@ -227,6 +227,14 @@ interface Apartment {
     name: string;
     students: any;
 }
+
+// 表单规则
+const editorFormRef = ref<FormInstance>();
+const editorRules = reactive<FormRules>({
+  id: [{ required: true, message: "请输入学号！", trigger: "blur" }],
+  name: [{ required: true, message: "请输入姓名！", trigger: "blur" }],
+  gender: [{ required: true, message: "请选择性别！", trigger: "blur" }],
+});
 
 const tableData = ref<any[]>([]); // 传递给组件的 data 参数
 const showSelection = ref<boolean>(true); // 传递给组件的 showSelection 参数
@@ -361,15 +369,21 @@ function clear() {
 }
 
 // 提交学生数据
-function onSubmit() {
-  axios.post("http://localhost:8088/api/student", stuData).then((resp) => {
-    if (resp.data.code != "200") {
-      ElMessage.error("提交失败：" + resp.data.msg)
-    } else {
-      ElMessage.success(resp.data.msg)
-      refreshData();
-      showDialog.value = false;
+const onSubmit = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (!valid) {
+      return;
     }
+    axios.post("http://localhost:8088/api/student", stuData).then((resp) => {
+      if (resp.data.code != "200") {
+        ElMessage.error("提交失败：" + resp.data.msg)
+      } else {
+        ElMessage.success(resp.data.msg)
+        refreshData();
+        showDialog.value = false;
+      }
+    });
   });
 }
 
