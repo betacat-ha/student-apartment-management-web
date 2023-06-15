@@ -1,7 +1,7 @@
 <template>
     <el-row>
         <el-form :inline="true" :model="searchApartment">
-            <el-form-item label="楼宇名">
+            <el-form-item label="楼栋名">
                 <el-select v-model="searchApartment.buildingData" placeholder="请选择" value-key="id" style="width: 100%;"
                     @change="searchBuildingChange">
                     <el-option label="不限" value=""></el-option>
@@ -41,38 +41,38 @@
 
     <!--添加数据对话框表单-->
     <el-dialog ref="form" :title="isEditing ? '编辑数据' : '添加数据'" v-model="showDialog" width="40%" @closed="dialogClosed">
-        <el-form ref="editorFormRef" :model="apartmentData" label-width="80px" :rules="editorRules"
+        <el-form ref="editorFormRef" :model="apartmentData" label-width="80px"
             @keyup.enter.native="onSubmit(editorFormRef)">
-            <el-form-item label="楼宇名">
+            <el-form-item label="楼栋名" prop="buildingDataItem">
                 <el-select v-model="apartmentData.buildingData" placeholder="请选择" value-key="id" style="width: 100%"
                     @change="buildingChange">
                     <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="房间号" prop="apartmentId">
+            <el-form-item label="房间号" prop="apartmentIdItem">
                 <el-select v-model="apartmentData.apartmentId" placeholder="请选择" value-key="id" style="width: 100%">
                     <el-option v-for="item in apartmentList" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="类型" prop="type">
+            <el-form-item label="类型" prop="typeItem">
                 <el-select v-model="apartmentData.type" placeholder="请选择" value-key="id" style="width: 100%">
                     <el-option label="水" value="水" />
                     <el-option label="电" value="电" />
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="用量" prop="amount">
+            <el-form-item label="用量" prop="amountItem">
                 <el-input v-model="apartmentData.amount"></el-input>
             </el-form-item>
 
-            <el-form-item label="开始时间">
+            <el-form-item label="开始时间" prop="startTimeItem">
                 <el-date-picker v-model="apartmentData.startTimeFormat" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
                     placeholder="选择一个日期" />
                 <!-- <el-input v-model="apartmentData.startTime"></el-input> -->
             </el-form-item>
-            <el-form-item label="结束时间">
+            <el-form-item label="结束时间" prop="endTimeItem">
                 <el-date-picker v-model="apartmentData.endTimeFormat" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
                     placeholder="选择一个日期" />
             </el-form-item>
@@ -107,7 +107,7 @@
 
     <el-table :data="tableData" border stripe height="370">
         <el-table-column :v-if="showSelection" type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="buildingName" label="楼宇" width="110" align="center" fixed="left" show-overflow-tooltip />
+        <el-table-column prop="buildingName" label="楼栋" width="110" align="center" fixed="left" show-overflow-tooltip />
         <el-table-column prop="apartmentName" label="宿舍号" width="80" align="center" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="60" align="center" show-overflow-tooltip />
         <el-table-column prop="amount" label="用量" width="100" align="center" show-overflow-tooltip />
@@ -167,9 +167,12 @@ interface Bill {
 // 表单规则
 const editorFormRef = ref<FormInstance>();
 const editorRules = reactive<FormRules>({
-    amount: [{ required: true, message: "请输入用量！", trigger: "blur" }],
-    type: [{ required: true, message: "请输入类型！", trigger: "blur" }],
-    apartmentId: [{ required: true, message: "请选择宿舍！", trigger: "blur" }],
+    amountItem: [{ required: true, message: "请输入用量！", trigger: "blur" }],
+    typeItem: [{ required: true, message: "请输入类型！", trigger: "blur" }],
+    buildingDataItem: [{ required: true, message: "请选择楼栋！", trigger: "blur" }],
+    apartmentIdItem: [{ required: true, message: "请选择宿舍！", trigger: "blur" }],
+    startTimeItem: [{ required: true, message: "请选择开始时间！", trigger: "blur" }],
+    endTimeItem: [{ required: true, message: "请选择结束时间！", trigger: "blur" }],
 });
 
 const value4 = ref('')
@@ -228,6 +231,9 @@ function onEdit(id: number) {
         apartmentList.value = apartmentData.buildingData.apartments;
         isEditing.value = true;
         showDialog.value = true;
+
+        // 清除验证，避免因数据自动填入导致校验失败
+        editorFormRef.value?.clearValidate();
     } else {
         ElMessage.error('页面数据异常，请刷新页面重试！')
     }
@@ -238,12 +244,14 @@ function dialogClosed() {
     apartmentData.amount = "";
     apartmentData.startTime = "";
     apartmentData.endTime = "";
+    apartmentData.startTimeFormat = "";
+    apartmentData.endTimeFormat = "";
     apartmentData.apartmentId = "";
     apartmentData.buildingData = {} as Building;
     isEditing.value = false;
 }
 
-// 从宿舍ID中获取楼宇信息
+// 从宿舍ID中获取楼栋信息
 const getBuildingFromApartmentId = (apartmentId: number, data: Building[]): Building => {
     for (const building of data) {
         for (const apartment of building.apartments) {
@@ -330,13 +338,13 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     });
 }
 
-// 楼宇改变
+// 楼栋改变
 function buildingChange() {
     apartmentList.value = apartmentData.buildingData.apartments;
     apartmentData.apartmentId = "";
 }
 
-// 查询框的楼宇改变
+// 查询框的楼栋改变
 function searchBuildingChange() {
     apartmentList.value = searchApartment.buildingData.apartments;
     searchApartment.apartmentId = "";
