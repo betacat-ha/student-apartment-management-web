@@ -2,7 +2,7 @@
     <el-row>
         <el-form :inline="true" :model="searchApartment">
             <el-form-item label="楼宇名">
-                <el-select v-model="searchApartment.buildingData" placeholder="请选择" value-key="id" style="width: 100%"
+                <el-select v-model="searchApartment.buildingData" placeholder="请选择" value-key="id" style="width: 100%;"
                     @change="searchBuildingChange">
                     <el-option label="不限" value=""></el-option>
                     <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
@@ -13,6 +13,14 @@
                 <el-select v-model="searchApartment.apartmentId" placeholder="请选择" value-key="id" style="width: 100%">
                     <el-option label="不限" value=""></el-option>
                     <el-option v-for="item in apartmentList" :key="item.id" :label="item.name" :value="item.id" />
+                </el-select>
+            </el-form-item>
+
+            <el-form-item label="类型">
+                <el-select v-model="searchApartment.type" placeholder="请选择" value-key="id" style="width: 80px">
+                    <el-option label="不限" value=""></el-option>
+                    <el-option label="水" value="水"></el-option>
+                    <el-option label="电" value="电"></el-option>
                 </el-select>
             </el-form-item>
 
@@ -60,7 +68,8 @@
             </el-form-item>
 
             <el-form-item label="开始时间">
-                <el-date-picker v-model="apartmentData.startTime" type="dates" value-format="x" placeholder="Pick one or more dates" />
+                <el-date-picker v-model="apartmentData.startTime" type="dates" value-format="x"
+                    placeholder="Pick one or more dates" />
                 <!-- <el-input v-model="apartmentData.startTime"></el-input> -->
             </el-form-item>
             <el-form-item label="结束时间">
@@ -194,6 +203,7 @@ const searchApartment = reactive({
     content: "",
     buildingData: {} as Building,
     apartmentId: "",
+    type: "",
     startTime: "",
     endTime: "",
 });
@@ -220,10 +230,7 @@ function dialogClosed() {
     apartmentData.type = "";
     apartmentData.amount = "";
     apartmentData.startTime = "";
-    apartmentData.gender = "";
     apartmentData.endTime = "";
-    apartmentData.phone = "";
-    apartmentData.email = "";
     apartmentData.apartmentId = "";
     apartmentData.buildingData = {} as Building;
     isEditing.value = false;
@@ -266,15 +273,17 @@ function deleteById(id: number) {
 
 // 查询
 function search() {
-    const buildingId = searchApartment.buildingData.id;
+    const buildingId = searchApartment.buildingData.id == undefined ? 0 : searchApartment.buildingData.id;
     const apartmentId = searchApartment.apartmentId;
+    const type = searchApartment.type;
     const startTime = searchApartment.startTime;
     const endTime = searchApartment.endTime;
 
-    axios.get("http://localhost:8088/api/student/search?apartmentId=" + apartmentId
+    axios.get("http://localhost:8088/api/usage/search?apartmentId=" + apartmentId
         + "&buildingId=" + buildingId
-        + "&startTime=" + startTime
-        + "&endTime=" + endTime
+        + "&startTimeFormat=" + startTime
+        + "&endTimeFormat=" + endTime
+        + "&type=" + type
     ).then((resp) => {
         if (resp.data.code != "200") {
             ElMessage.error("查询失败：" + resp.data.msg)
@@ -289,6 +298,9 @@ function search() {
 function clear() {
     searchApartment.apartmentId = "";
     searchApartment.buildingData = {} as Building;
+    searchApartment.type = "";
+    searchApartment.startTime = "";
+    searchApartment.endTime = "";
     refreshData();
 }
 
