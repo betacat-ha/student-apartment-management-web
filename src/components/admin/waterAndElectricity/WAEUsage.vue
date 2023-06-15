@@ -107,7 +107,7 @@
 
     <el-table :data="tableData" border stripe height="370">
         <el-table-column :v-if="showSelection" type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="buildingName" label="楼栋" width="110" align="center" fixed="left" show-overflow-tooltip />
+        <el-table-column prop="buildingName" label="楼栋名" width="110" align="center" fixed="left" show-overflow-tooltip />
         <el-table-column prop="apartmentName" label="宿舍号" width="80" align="center" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="60" align="center" show-overflow-tooltip />
         <el-table-column prop="amount" label="用量" width="100" align="center" show-overflow-tooltip />
@@ -175,7 +175,6 @@ const editorRules = reactive<FormRules>({
     endTimeItem: [{ required: true, message: "请选择结束时间！", trigger: "blur" }],
 });
 
-const value4 = ref('')
 const tableData = ref<any[]>([]); // 传递给组件的 data 参数
 const showSelection = ref<boolean>(true); // 传递给组件的 showSelection 参数
 const showDialog = ref(false); // 控制对话框的显示与隐藏
@@ -276,7 +275,7 @@ function handleCurrentChange() {
 
 // 删除
 function deleteById(id: number) {
-    axios.delete("http://localhost:8088/api/student?id=" + id).then((resp) => {
+    axios.delete("http://localhost:8088/api/usage?id=" + id).then((resp) => {
         if (resp.data.code != "200") {
             ElMessage.error("删除失败：" + resp.data.msg)
         } else {
