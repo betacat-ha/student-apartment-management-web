@@ -68,12 +68,13 @@
             </el-form-item>
 
             <el-form-item label="开始时间">
-                <el-date-picker v-model="apartmentData.startTime" type="dates" value-format="x"
-                    placeholder="Pick one or more dates" />
+                <el-date-picker v-model="apartmentData.startTimeFormat" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="选择一个日期" />
                 <!-- <el-input v-model="apartmentData.startTime"></el-input> -->
             </el-form-item>
             <el-form-item label="结束时间">
-                <el-input v-model="apartmentData.endTime"></el-input>
+                <el-date-picker v-model="apartmentData.endTimeFormat" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="选择一个日期" />
             </el-form-item>
 
             <el-form-item label="支付状态">
@@ -177,10 +178,13 @@ const showSelection = ref<boolean>(true); // 传递给组件的 showSelection �
 const showDialog = ref(false); // 控制对话框的显示与隐藏
 const isEditing = ref(false); // 是否正在编辑
 const apartmentData = reactive({
+    id: "",
     type: "",
     amount: "",
     startTime: "",
     endTime: "",
+    startTimeFormat: "",
+    endTimeFormat: "",
     apartmentId: "",
     buildingId: "",
     buildingData: {} as Building,
@@ -218,6 +222,9 @@ function onEdit(id: number) {
         apartmentData.endTime = matchingData.endTime;
         apartmentData.apartmentId = matchingData.apartmentId;
         apartmentData.buildingData = getBuildingFromApartmentId(matchingData.apartmentId, buildingList.value);
+        apartmentData.id = matchingData.id;
+        apartmentData.startTimeFormat = matchingData.startTimeFormat;
+        apartmentData.endTimeFormat = matchingData.endTimeFormat;
         apartmentList.value = apartmentData.buildingData.apartments;
         isEditing.value = true;
         showDialog.value = true;
@@ -304,14 +311,14 @@ function clear() {
     refreshData();
 }
 
-// 提交学生数据
+// 提交数据
 const onSubmit = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
         if (!valid) {
             return;
         }
-        axios.post("http://localhost:8088/api/student", apartmentData).then((resp) => {
+        axios.post("http://localhost:8088/api/usage", apartmentData).then((resp) => {
             if (resp.data.code != "200") {
                 ElMessage.error("提交失败：" + resp.data.msg)
             } else {
