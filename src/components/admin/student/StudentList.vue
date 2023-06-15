@@ -9,11 +9,7 @@
             <el-option label="姓名" value="2"></el-option>
             <el-option label="班级" value="3"></el-option>
           </el-select>
-          <el-input
-            v-model="searchStu.content"
-            placeholder="请输入查询内容"
-            style="width: 150px"
-          ></el-input>
+          <el-input v-model="searchStu.content" placeholder="请输入查询内容" style="width: 150px"></el-input>
         </div>
       </el-form-item>
       <el-form-item label="性别">
@@ -34,16 +30,15 @@
   <div style="display: flex">
     <!-- <el-button type="primary" :icon="Edit">批量编辑</el-button> -->
     <el-button type="primary" :icon="Delete">批量删除</el-button>
-    <el-button type="primary" :icon="Plus" @click="showDialog = true"
-      >添加学生</el-button
-    >
+    <el-button type="primary" :icon="Plus" @click="showDialog = true">添加学生</el-button>
   </div>
 
   <br />
 
   <!--添加数据对话框表单-->
   <el-dialog ref="form" :title="isEditing ? '编辑学生' : '添加学生'" v-model="showDialog" width="40%" @closed="dialogClosed">
-    <el-form ref="editorFormRef" :model="stuData" label-width="60px" :rules="editorRules" @keyup.enter.native="onSubmit(editorFormRef)">
+    <el-form ref="editorFormRef" :model="stuData" label-width="60px" :rules="editorRules"
+      @keyup.enter.native="onSubmit(editorFormRef)">
       <el-form-item label="学号" prop="id">
         <el-input v-model="stuData.id"></el-input>
       </el-form-item>
@@ -60,11 +55,7 @@
         <el-input v-model="stuData.email"></el-input>
       </el-form-item>
       <el-form-item label="性别" prop="gender">
-        <el-select
-          v-model="stuData.gender"
-          placeholder="请选择"
-          style="width: 100%"
-        >
+        <el-select v-model="stuData.gender" placeholder="请选择" style="width: 100%">
           <el-option label="男" value="男" />
           <el-option label="女" value="女" />
         </el-select>
@@ -86,35 +77,15 @@
         </el-form-item> -->
 
       <el-form-item label="楼宇名">
-        <el-select
-          v-model="stuData.buildingData"
-          placeholder="请选择"
-          value-key="id"
-          style="width: 100%"
-          @change="buildingChange"
-        >
-          <el-option
-            v-for="item in buildingList"
-            :key="item.id"
-            :label="item.name"
-            :value="item"
-          />
+        <el-select v-model="stuData.buildingData" placeholder="请选择" value-key="id" style="width: 100%"
+          @change="buildingChange">
+          <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
         </el-select>
       </el-form-item>
 
       <el-form-item label="房间号">
-        <el-select
-          v-model="stuData.apartmentId"
-          placeholder="请选择"
-          value-key="id"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="item in apartmentList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
+        <el-select v-model="stuData.apartmentId" placeholder="请选择" value-key="id" style="width: 100%">
+          <el-option v-for="item in apartmentList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <div>
@@ -125,61 +96,14 @@
   </el-dialog>
 
   <el-table :data="tableData" border stripe height="370">
-    <el-table-column
-      :v-if="showSelection"
-      type="selection"
-      width="55"
-      align="center"
-    ></el-table-column>
-    <el-table-column
-      prop="name"
-      label="姓名"
-      width="120"
-      align="center"
-      fixed="left"
-      show-overflow-tooltip
-    />
-    <el-table-column
-      prop="id"
-      label="学号"
-      width="150"
-      align="center"
-      show-overflow-tooltip
-    />
-    <el-table-column
-      prop="className"
-      label="班级"
-      width="120"
-      align="center"
-      show-overflow-tooltip
-    />
-    <el-table-column
-      prop="age"
-      label="年龄"
-      width="60"
-      align="center"
-      show-overflow-tooltip
-    />
-    <el-table-column
-      prop="gender"
-      label="性别"
-      width="60"
-      align="center"
-      show-overflow-tooltip
-    />
-    <el-table-column
-      prop="phone"
-      label="电话"
-      width="120"
-      align="center"
-      show-overflow-tooltip
-    />
-    <el-table-column
-      prop="email"
-      label="邮箱"
-      align="center"
-      show-overflow-tooltip
-    />
+    <el-table-column :v-if="showSelection" type="selection" width="55" align="center"></el-table-column>
+    <el-table-column prop="name" label="姓名" width="120" align="center" fixed="left" show-overflow-tooltip />
+    <el-table-column prop="id" label="学号" width="150" align="center" show-overflow-tooltip />
+    <el-table-column prop="className" label="班级" width="120" align="center" show-overflow-tooltip />
+    <el-table-column prop="age" label="年龄" width="60" align="center" show-overflow-tooltip />
+    <el-table-column prop="gender" label="性别" width="60" align="center" show-overflow-tooltip />
+    <el-table-column prop="phone" label="电话" width="120" align="center" show-overflow-tooltip />
+    <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip />
     <el-table-column align="center" label="操作" width="150">
       <template #default="scope">
         <el-button type="default" size="small" @click="onEdit(scope.row.id)">编辑</el-button>
@@ -188,18 +112,10 @@
     </el-table-column>
   </el-table>
   <br />
-  <el-pagination
-      v-model:current-page="pagination.currentPage"
-      v-model:page-size="pagination.pageSize"
-      :page-sizes="[5,10,15,20,30,40]"
-      :small="pagination.small"
-      :disabled="pagination.disabled"
-      :background="pagination.background"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="pagination.total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+  <el-pagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
+    :page-sizes="[5, 10, 15, 20, 30, 40]" :small="pagination.small" :disabled="pagination.disabled"
+    :background="pagination.background" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"
+    @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 </template>
 <script lang="ts" setup>
 import axios from "axios";
@@ -216,16 +132,16 @@ import { Alignment } from "element-plus/es/components/table-v2/src/constants";
 import { FormInstance, FormRules, ElMessage } from "element-plus";
 
 interface Building {
-    id: number;
-    name: string;
-    apartments: Apartment[];
+  id: number;
+  name: string;
+  apartments: Apartment[];
 }
 
 interface Apartment {
-    id: number;
-    buildingId: number;
-    name: string;
-    students: any;
+  id: number;
+  buildingId: number;
+  name: string;
+  students: any;
 }
 
 // 表单规则
@@ -307,23 +223,23 @@ function dialogClosed() {
 
 // 从宿舍ID中获取楼宇信息
 const getBuildingFromApartmentId = (apartmentId: number, data: Building[]): Building => {
-    for (const building of data) {
-        for (const apartment of building.apartments) {
-            if (apartment.id === apartmentId) {
-                return building;
-            }
-        }
+  for (const building of data) {
+    for (const apartment of building.apartments) {
+      if (apartment.id === apartmentId) {
+        return building;
+      }
     }
-    return {} as Building;
+  }
+  return {} as Building;
 };
 
 // 处理每页显示条数变化
-function handleSizeChange(){
+function handleSizeChange() {
 
 }
 
 // 处理当前页码变化
-function handleCurrentChange(){
+function handleCurrentChange() {
   console.log('handleCurrentChange:', pagination.currentPage)
 
 }
@@ -348,16 +264,16 @@ function search() {
   }
 
   // TODO: 根据查询条件查询数据
-  axios.get("http://localhost:8088/api/student/search?type=" + searchStu.type 
-  + "&content=" + searchStu.content 
-  + "&gender=" + searchStu.gender).then((resp) => {
-  if (resp.data.code != "200") {
-    ElMessage.error("查询失败：" + resp.data.msg)
-  } else {
-    tableData.value = resp.data.data;
-    ElMessage.success("查询成功")
-  }
-});
+  axios.get("http://localhost:8088/api/student/search?type=" + searchStu.type
+    + "&content=" + searchStu.content
+    + "&gender=" + searchStu.gender).then((resp) => {
+      if (resp.data.code != "200") {
+        ElMessage.error("查询失败：" + resp.data.msg)
+      } else {
+        tableData.value = resp.data.data;
+        ElMessage.success("查询成功")
+      }
+    });
 }
 
 // 清空查询条件
@@ -401,7 +317,7 @@ function refreshData(enablePagination: boolean = false) {
   if (enablePagination) {
     getStr += "?page=" + pagination.currentPage + "&size=" + pagination.pageSize
   }
-  
+
 
   // 获取表格数据
   axios.get(getStr).then((resp) => {

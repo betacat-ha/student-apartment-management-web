@@ -1,36 +1,4 @@
 <template>
-    <el-row>
-        <el-form :inline="true" :model="searchApartment">
-            <el-form-item label="楼栋名">
-                <el-select v-model="searchApartment.buildingData" placeholder="请选择" value-key="id" style="width: 100%;"
-                    @change="searchBuildingChange">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="房间号">
-                <el-select v-model="searchApartment.apartmentId" placeholder="请选择" value-key="id" style="width: 100%">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option v-for="item in apartmentList" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="类型">
-                <el-select v-model="searchApartment.type" placeholder="请选择" value-key="id" style="width: 80px">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option label="水" value="水"></el-option>
-                    <el-option label="电" value="电"></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item>
-                <el-button type="primary" @click="search">查询</el-button>
-                <el-button type="info" @click="clear">清空</el-button>
-            </el-form-item>
-        </el-form>
-    </el-row>
-
     <div style="display: flex">
         <!-- <el-button type="primary" :icon="Edit">批量编辑</el-button> -->
         <el-button type="primary" :icon="Delete">批量删除</el-button>
@@ -41,63 +9,30 @@
 
     <!--添加数据对话框表单-->
     <el-dialog ref="form" :title="isEditing ? '编辑数据' : '添加数据'" v-model="showDialog" width="40%" @closed="dialogClosed">
-        <el-form ref="editorFormRef" :model="apartmentData" label-width="80px"
-            @keyup.enter.native="onSubmit(editorFormRef)">
-            <el-form-item label="楼栋名" prop="buildingDataItem">
-                <el-select v-model="apartmentData.buildingData" placeholder="请选择" value-key="id" style="width: 100%"
-                    @change="buildingChange">
-                    <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
-                </el-select>
+        <el-form ref="editorFormRef" :model="userData" label-width="80px" @keyup.enter.native="onSubmit(editorFormRef)">
+            <el-form-item label="姓名" prop="nameItem">
+                <el-input v-model="userData.name"></el-input>
             </el-form-item>
 
-            <el-form-item label="房间号" prop="apartmentIdItem">
-                <el-select v-model="apartmentData.apartmentId" placeholder="请选择" value-key="id" style="width: 100%">
-                    <el-option v-for="item in apartmentList" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+            <el-form-item label="身份" prop="roleItem">
+                <!-- <el-tag v-for="item in userData.role" :key="item.id" class="mx-1" effect="light" closable
+                    @close="deleteApartment(item.id)">
+                    {{ item.name }}
+                </el-tag> -->
             </el-form-item>
 
-            <el-form-item label="类型" prop="typeItem">
-                <el-select v-model="apartmentData.type" placeholder="请选择" value-key="id" style="width: 100%">
-                    <el-option label="水" value="水" />
-                    <el-option label="电" value="电" />
-                </el-select>
+            <el-form-item label="电话" prop="phoneItem">
+                <el-input v-model="userData.phone"> </el-input>
             </el-form-item>
 
-            <el-form-item label="用量" prop="amountItem">
-                <el-input v-model="apartmentData.amount"></el-input>
+            <el-form-item label="邮箱" prop="emailItem">
+                <el-input v-model="userData.email"></el-input>
             </el-form-item>
 
-            <el-form-item label="开始时间" prop="startTimeItem">
-                <el-date-picker v-model="apartmentData.startTimeFormat" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="选择一个日期" />
-                <!-- <el-input v-model="apartmentData.startTime"></el-input> -->
+            <el-form-item label="密码" prop="resetPasswordItem">
+                <el-button> 重置密码</el-button>
             </el-form-item>
-            <el-form-item label="结束时间" prop="endTimeItem">
-                <el-date-picker v-model="apartmentData.endTimeFormat" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="选择一个日期" />
-            </el-form-item>
-
-            <el-form-item label="支付状态">
-                <el-label>
-                    {{ apartmentData.billData.status ? apartmentData.billData.status : "账单未生成" }}
-                </el-label>
-                <el-button v-if="!apartmentData.billData.status" style="margin-left: 10px;">支付</el-button>
-            </el-form-item>
-
-            <!-- <el-form-item label="证件照">
-            <el-upload
-              class="avatar-uploader"
-              action="/api/upload"
-              :headers="token"
-              name="image"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-            >
-              <img v-if="stuData.image" :src="stuData.image" class="avatar" />
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </el-form-item> -->
+            
             <div>
                 <el-button type="primary" @click="onSubmit(editorFormRef)">提交</el-button>
                 <el-button @click="showDialog = false">取消</el-button>
@@ -105,15 +40,14 @@
         </el-form>
     </el-dialog>
 
-    <el-table :data="tableData" border stripe height="370">
+    <el-table :data="tableData" border stripe height="450">
         <el-table-column :v-if="showSelection" type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="buildingName" label="楼栋名" width="110" align="center" fixed="left" show-overflow-tooltip />
-        <el-table-column prop="apartmentName" label="宿舍号" width="80" align="center" show-overflow-tooltip />
-        <el-table-column prop="type" label="类型" width="60" align="center" show-overflow-tooltip />
-        <el-table-column prop="amount" label="用量" width="100" align="center" show-overflow-tooltip />
-        <el-table-column prop="startTime" label="开始时间" align="center" show-overflow-tooltip />
-        <el-table-column prop="endTime" label="结束时间" align="center" show-overflow-tooltip />
-        <el-table-column align="center" label="操作" width="210">
+        <el-table-column prop="id" label="序号" width="150" align="center" show-overflow-tooltip />
+        <el-table-column prop="name" label="姓名" width="120" align="center" show-overflow-tooltip />
+        <el-table-column prop="phone" label="电话" width="120" align="center" show-overflow-tooltip />
+        <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip />
+        <el-table-column prop="lastLoginTime" label="上次登录" align="center" show-overflow-tooltip />
+        <el-table-column align="center" label="操作">
             <template #default="scope">
                 <el-button type="default" size="small" @click="onEdit(scope.row.id)">详情</el-button>
                 <el-button type="default" size="small" @click="onEdit(scope.row.id)">编辑</el-button>
@@ -121,11 +55,6 @@
             </template>
         </el-table-column>
     </el-table>
-    <br />
-    <el-pagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
-        :page-sizes="[5, 10, 15, 20, 30, 40]" :small="pagination.small" :disabled="pagination.disabled"
-        :background="pagination.background" layout="total, sizes, prev, pager, next, jumper" :total="pagination.total"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 </template>
 <script lang="ts" setup>
 import axios from "axios";
@@ -154,16 +83,6 @@ interface Apartment {
     students: any;
 }
 
-interface Bill {
-    id: number;
-    usage_id: number;
-    amount: number;
-    status: string;
-    date: string;
-    payDate: string;
-    payType: string;
-}
-
 // 表单规则
 const editorFormRef = ref<FormInstance>();
 const editorRules = reactive<FormRules>({
@@ -179,55 +98,30 @@ const tableData = ref<any[]>([]); // 传递给组件的 data 参数
 const showSelection = ref<boolean>(true); // 传递给组件的 showSelection 参数
 const showDialog = ref(false); // 控制对话框的显示与隐藏
 const isEditing = ref(false); // 是否正在编辑
-const apartmentData = reactive({
+const userData = reactive({
     id: "",
-    type: "",
-    amount: "",
-    startTime: "",
-    endTime: "",
-    startTimeFormat: "",
-    endTimeFormat: "",
-    apartmentId: "",
-    buildingId: "",
-    buildingData: {} as Building,
-    billData: {} as Bill,
+    name: "",
+    administrator: "",
+    phone: "",
+    email: "",
+    role: [] as Apartment[],
 });
-const pagination = reactive({
-    small: false,
-    disabled: true,
-    background: false,
-    currentPage: 1,
-    pageSize: 10,
-    total: 0,
-});
+
 // 宿舍列表的数据
 const buildingList = ref<any[]>([]);
-const apartmentList = ref<any[]>([]);
 
-// 查询表单的数据
-const searchApartment = reactive({
-    content: "",
-    buildingData: {} as Building,
-    apartmentId: "",
-    type: "",
-    startTime: "",
-    endTime: "",
-});
+const roleList = ref<any[]>([]);
 
 function onEdit(id: number) {
     const matchingData = tableData.value.find(item => item.id === id);
     if (matchingData) {
         console.log(matchingData);
-        apartmentData.type = matchingData.type;
-        apartmentData.amount = matchingData.amount;
-        apartmentData.startTime = matchingData.startTime;
-        apartmentData.endTime = matchingData.endTime;
-        apartmentData.apartmentId = matchingData.apartmentId;
-        apartmentData.buildingData = getBuildingFromApartmentId(matchingData.apartmentId, buildingList.value);
-        apartmentData.id = matchingData.id;
-        apartmentData.startTimeFormat = matchingData.startTimeFormat;
-        apartmentData.endTimeFormat = matchingData.endTimeFormat;
-        apartmentList.value = apartmentData.buildingData.apartments;
+        userData.id = matchingData.id;
+        userData.name = matchingData.name;
+        userData.role = matchingData.role;
+        userData.phone = matchingData.phone;
+        userData.email = matchingData.email;
+
         isEditing.value = true;
         showDialog.value = true;
 
@@ -239,43 +133,17 @@ function onEdit(id: number) {
 }
 
 function dialogClosed() {
-    apartmentData.type = "";
-    apartmentData.amount = "";
-    apartmentData.startTime = "";
-    apartmentData.endTime = "";
-    apartmentData.startTimeFormat = "";
-    apartmentData.endTimeFormat = "";
-    apartmentData.apartmentId = "";
-    apartmentData.buildingData = {} as Building;
+    userData.id = "";
+    userData.name = "";
+    userData.role = [] as Apartment[];
+    userData.phone = "";
+    userData.email = "";
     isEditing.value = false;
-}
-
-// 从宿舍ID中获取楼栋信息
-const getBuildingFromApartmentId = (apartmentId: number, data: Building[]): Building => {
-    for (const building of data) {
-        for (const apartment of building.apartments) {
-            if (apartment.id === apartmentId) {
-                return building;
-            }
-        }
-    }
-    return {} as Building;
-};
-
-// 处理每页显示条数变化
-function handleSizeChange() {
-
-}
-
-// 处理当前页码变化
-function handleCurrentChange() {
-    console.log('handleCurrentChange:', pagination.currentPage)
-
 }
 
 // 删除
 function deleteById(id: number) {
-    axios.delete("http://localhost:8088/api/usage?id=" + id).then((resp) => {
+    axios.delete("http://localhost:8088/api/user?id=" + id).then((resp) => {
         if (resp.data.code != "200") {
             ElMessage.error("删除失败：" + resp.data.msg)
         } else {
@@ -285,39 +153,6 @@ function deleteById(id: number) {
     });
 }
 
-// 查询
-function search() {
-    const buildingId = searchApartment.buildingData.id == undefined ? 0 : searchApartment.buildingData.id;
-    const apartmentId = searchApartment.apartmentId;
-    const type = searchApartment.type;
-    const startTime = searchApartment.startTime;
-    const endTime = searchApartment.endTime;
-
-    axios.get("http://localhost:8088/api/usage/search?apartmentId=" + apartmentId
-        + "&buildingId=" + buildingId
-        + "&startTimeFormat=" + startTime
-        + "&endTimeFormat=" + endTime
-        + "&type=" + type
-    ).then((resp) => {
-        if (resp.data.code != "200") {
-            ElMessage.error("查询失败：" + resp.data.msg)
-        } else {
-            tableData.value = resp.data.data;
-            ElMessage.success("查询成功")
-        }
-    });
-}
-
-// 清空查询条件
-function clear() {
-    searchApartment.apartmentId = "";
-    searchApartment.buildingData = {} as Building;
-    searchApartment.type = "";
-    searchApartment.startTime = "";
-    searchApartment.endTime = "";
-    refreshData();
-}
-
 // 提交数据
 const onSubmit = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
@@ -325,11 +160,12 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         if (!valid) {
             return;
         }
-        axios.post("http://localhost:8088/api/usage", apartmentData).then((resp) => {
+        axios.post("http://localhost:8088/api/building", userData).then((resp) => {
             if (resp.data.code != "200") {
-                ElMessage.error("提交失败：" + resp.data.msg)
+                ElMessage.error(resp.data.msg);
+                refreshData();
             } else {
-                ElMessage.success(resp.data.msg)
+                ElMessage.success("操作完成！")
                 refreshData();
                 showDialog.value = false;
             }
@@ -337,44 +173,31 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     });
 }
 
-// 楼栋改变
-function buildingChange() {
-    apartmentList.value = apartmentData.buildingData.apartments;
-    apartmentData.apartmentId = "";
-}
-
-// 查询框的楼栋改变
-function searchBuildingChange() {
-    apartmentList.value = searchApartment.buildingData.apartments;
-    searchApartment.apartmentId = "";
-}
-
 refreshData();
 
 // 刷新数据
-function refreshData(enablePagination: boolean = false) {
-    var getStr = "http://localhost:8088/api/usage"
-    if (enablePagination) {
-        getStr += "?page=" + pagination.currentPage + "&size=" + pagination.pageSize
-    }
-
-
-    // 获取表格数据
-    axios.get(getStr).then((resp) => {
-        showSelection.value = true;
-        if (resp.data.code != "200") {
-            ElMessage.error("获取数据失败：" + resp.data.msg)
-        }
-        tableData.value = resp.data.data;
-    });
-
-    // 获取宿舍数据
+function refreshData() {
+    // 获取楼栋数据
     axios.get("http://localhost:8088/api/building").then((resp) => {
+        showSelection.value = true;
         if (resp.data.code != "200") {
             ElMessage.error("获取数据失败：" + resp.data.msg)
         } else {
             buildingList.value = resp.data.data;
+            
         }
     });
+
+    // 获取宿舍数据
+    axios.get("http://localhost:8088/api/user").then((resp) => {
+        if (resp.data.code != "200") {
+            ElMessage.error("获取数据失败：" + resp.data.msg)
+        } else {
+            tableData.value = resp.data.data;
+        }
+    });
+
+
+
 }
 </script>
