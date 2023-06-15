@@ -3,8 +3,18 @@ import Welcome from "../components/admin/Welcome.vue";
 import AdminView from '../views/AdminView.vue'
 import StudentList from "../components/admin/student/StudentList.vue";
 import Login from '../components/Login.vue'
+import WAEUsage from '../components/admin/waterAndElectricity/WAEUsage.vue'
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/",
+    redirect: "/login"
+  },
+  {
+    path: "/login",
+    name: "LoginView",
+    component:Login
+  },
   {
     path: "/admin",
     name: "AdminView",
@@ -12,19 +22,25 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
+        name: 'Welcome',
         component: Welcome
       },
       {
         path: "student-list",
+        name: "StudentList",
         component: StudentList
+      },
+      {
+        path: "wae-usage",
+        name: "WAEUsage",
+        component: WAEUsage
       }
     ]
   },
-  {
-    path: "/login",
-    name: "LoginView",
-    component:Login
-  }
+
+  
+
+  // {path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('../components/NotFound.vue')},
 ];
 
 const router = createRouter({

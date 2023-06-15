@@ -3,8 +3,6 @@
     <el-menu
       default-active="1"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       router
     >
       <el-sub-menu index="1">
@@ -20,8 +18,8 @@
           <el-icon><PieChart /></el-icon>
           <span>水电管理</span>
         </template>
-          <el-menu-item index="2-1">水电用量</el-menu-item>
-          <el-menu-item index="2-2">水电账单</el-menu-item>
+          <el-menu-item index="/admin/wae-usage">水电用量</el-menu-item>
+          <el-menu-item index="/admin/wae-bill">水电账单</el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="3">
         <template #title>
@@ -50,10 +48,10 @@ Location,
 Setting,
 PieChart,
 } from '@element-plus/icons-vue'
-const handleOpen = (key: string, keyPath: string[]) => {
-console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-console.log(key, keyPath)
-}
+// const handleOpen = (key: string, keyPath: string[]) => {
+// console.log(key, keyPath)
+// }
+// const handleClose = (key: string, keyPath: string[]) => {
+// console.log(key, keyPath)
+// }
 </script>
