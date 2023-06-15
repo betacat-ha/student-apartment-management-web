@@ -26,8 +26,8 @@
           <el-icon><setting /></el-icon>
           <span>系统管理</span>
         </template>
-          <el-menu-item index="/admin/building">楼宇管理</el-menu-item>
-          <el-menu-item index="/admin/user">员工管理</el-menu-item>
+          <el-menu-item index="/admin/building-list">楼宇管理</el-menu-item>
+          <el-menu-item index="/admin/user-list">员工管理</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="3" disabled>
         <el-icon><document /></el-icon>

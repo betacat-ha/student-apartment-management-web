@@ -4,6 +4,8 @@ import AdminView from '../views/AdminView.vue'
 import StudentList from "../components/admin/student/StudentList.vue";
 import Login from '../components/Login.vue'
 import WAEUsage from '../components/admin/waterAndElectricity/WAEUsage.vue'
+import BuildingList from '../components/admin/building/BuildingList.vue'
+import UserList from '../components/admin/user/UserList.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -34,6 +36,16 @@ const routes: Array<RouteRecordRaw> = [
         path: "wae-usage",
         name: "WAEUsage",
         component: WAEUsage
+      },
+      {
+        path: "building-list",
+        name: "BuildingList",
+        component: BuildingList
+      },
+      {
+        path: "user-list",
+        name: "UserList",
+        component: UserList
       }
     ]
   },
