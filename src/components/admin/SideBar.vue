@@ -21,7 +21,7 @@
           <el-menu-item index="/admin/wae-usage">水电用量</el-menu-item>
           <el-menu-item index="/admin/wae-bill">水电账单</el-menu-item>
       </el-sub-menu>
-      <el-sub-menu index="3">
+      <el-sub-menu index="3" v-if="showSysSetting">
         <template #title>
           <el-icon><setting /></el-icon>
           <span>系统管理</span>
@@ -48,10 +48,27 @@ Location,
 Setting,
 PieChart,
 } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import axios from '@/http'
 // const handleOpen = (key: string, keyPath: string[]) => {
 // console.log(key, keyPath)
 // }
 // const handleClose = (key: string, keyPath: string[]) => {
 // console.log(key, keyPath)
 // }
+
+const showSysSetting = ref<boolean>(false);
+
+axios.get('/api/user/current').then((resp) => {
+  const data = resp.data.data;
+  if (resp.data.code != "200") {
+    return;
+  }
+
+  if (data.roleId == 1) {
+    showSysSetting.value = true;
+  }
+
+})
+
 </script>

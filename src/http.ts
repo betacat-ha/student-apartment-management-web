@@ -11,7 +11,7 @@ axios.interceptors.request.use(
             // 请求头加上 token 数据
             config.headers.token = store.state.token;
         }else {
-            console.log('no token');
+            // 没有token时
         }
         return config;
     },
@@ -92,6 +92,7 @@ axios.interceptors.response.use(
     }
   );
 
+  axios.defaults.baseURL = "http://localhost:8088"  // 修改默认配置 请求根路径
 
 // 导出给 main.js 挂载
 export default axios;
