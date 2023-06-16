@@ -76,7 +76,7 @@
           </el-upload>
         </el-form-item> -->
 
-      <el-form-item label="楼宇名">
+      <el-form-item label="楼栋名">
         <el-select v-model="stuData.buildingData" placeholder="请选择" value-key="id" style="width: 100%"
           @change="buildingChange">
           <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
@@ -221,7 +221,7 @@ function dialogClosed() {
   isEditing.value = false;
 }
 
-// 从宿舍ID中获取楼宇信息
+// 从宿舍ID中获取楼栋信息
 const getBuildingFromApartmentId = (apartmentId: number, data: Building[]): Building => {
   for (const building of data) {
     for (const apartment of building.apartments) {
@@ -303,7 +303,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
   });
 }
 
-// 楼宇改变
+// 楼栋改变
 function buildingChange() {
   apartmentList.value = stuData.buildingData.apartments;
   stuData.apartmentId = "";
