@@ -6,7 +6,7 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import App from './App.vue'
-import axios from "axios"
+import axios from "./http"
 
 // 路由
 import router from "./router";

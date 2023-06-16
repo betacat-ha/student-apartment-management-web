@@ -3,6 +3,7 @@ import Welcome from "../components/admin/Welcome.vue";
 import AdminView from '../views/AdminView.vue'
 import StudentList from "../components/admin/student/StudentList.vue";
 import Login from '../components/Login.vue'
+import LoginView from '../views/LoginView.vue'
 import WAEUsage from '../components/admin/waterAndElectricity/WAEUsage.vue'
 import BuildingList from '../components/admin/building/BuildingList.vue'
 import UserList from '../components/admin/user/UserList.vue'
@@ -15,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "LoginView",
-    component:Login
+    component:LoginView
   },
   {
     path: "/admin",

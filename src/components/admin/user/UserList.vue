@@ -57,7 +57,7 @@
     </el-table>
 </template>
 <script lang="ts" setup>
-import axios from "axios";
+import axios from "@/http";
 import {
     Delete,
     Edit,
