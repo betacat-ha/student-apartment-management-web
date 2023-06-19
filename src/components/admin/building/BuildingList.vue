@@ -1,36 +1,4 @@
 <template>
-    <!-- <el-row>
-        <el-form :inline="true" :model="searchApartment">
-            <el-form-item label="楼栋名">
-                <el-select v-model="searchApartment.buildingData" placeholder="请选择" value-key="id" style="width: 100%;"
-                    @change="searchBuildingChange">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option v-for="item in buildingList" :key="item.id" :label="item.name" :value="item" />
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="房间号">
-                <el-select v-model="searchApartment.apartmentId" placeholder="请选择" value-key="id" style="width: 100%">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option v-for="item in apartmentList" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="类型">
-                <el-select v-model="searchApartment.type" placeholder="请选择" value-key="id" style="width: 80px">
-                    <el-option label="不限" value=""></el-option>
-                    <el-option label="水" value="水"></el-option>
-                    <el-option label="电" value="电"></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item>
-                <el-button type="primary" @click="search">查询</el-button>
-                <el-button type="info" @click="clear">清空</el-button>
-            </el-form-item>
-        </el-form>
-    </el-row> -->
-
     <div style="display: flex">
         <!-- <el-button type="primary" :icon="Edit">批量编辑</el-button> -->
         <el-button type="primary" :icon="Delete">批量删除</el-button>
@@ -41,7 +9,7 @@
 
     <!--添加数据对话框表单-->
     <el-dialog ref="form" :title="isEditing ? '编辑数据' : '添加数据'" v-model="showDialog" width="40%" @closed="dialogClosed">
-        <el-form ref="editorFormRef" :model="buildingData" label-width="80px" @keyup.enter.native="onSubmit(editorFormRef)">
+        <el-form ref="editorFormRef" :model="buildingData" label-width="80px">
             <el-form-item label="楼栋名" prop="buildingDataItem">
                 <el-input v-model="buildingData.name"></el-input>
             </el-form-item>
@@ -51,20 +19,22 @@
                     @close="deleteApartment(item.id)">
                     {{ item.name }}
                 </el-tag>
+                <el-input v-if="inputVisible" ref="InputRef" v-model="buildingData.newApartment" class="ml-1 w-20" size="small"
+                    @keyup.enter="handleInputConfirm" @blur="handleInputConfirm" />
+                <el-button v-else class="button-new-tag ml-1" size="small" @click="showApartmentNameInput">
+                    + 添加房间
+                </el-button>
             </el-form-item>
 
             <!-- <el-lable>
                 请注意，删除楼栋时，该楼栋下的所有房间将被删除！
             </el-lable> -->
 
-            <el-form-item label="添加房间" prop="addApartment">
-                <el-input v-model="buildingData.newApartment">
-                    <template #append>
-                        <el-button type="button" @click="addApartment">添加</el-button>
-                    </template>
-                </el-input>
+            <el-form-item label="管理员" prop="administrator">
+                <el-select v-model="buildingData.administratorId" multiple placeholder="选择" style="width: 100%">
+                    <el-option v-for="item in userData" :key="item.id" :label="item.name" :value="item.id" />
+                </el-select>
             </el-form-item>
-
             <div>
                 <el-button type="primary" @click="onSubmit(editorFormRef)">提交</el-button>
                 <el-button @click="showDialog = false">取消</el-button>
@@ -95,9 +65,9 @@ import {
     Share,
     Upload,
 } from "@element-plus/icons-vue";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, nextTick, reactive, ref } from "vue";
 import { Alignment } from "element-plus/es/components/table-v2/src/constants";
-import { FormInstance, FormRules, ElMessage } from "element-plus";
+import { FormInstance, FormRules, ElMessage, ElInput } from "element-plus";
 
 interface Building {
     id: number;
@@ -110,6 +80,12 @@ interface Apartment {
     buildingId: number;
     name: string;
     students: any;
+}
+
+interface User {
+    id: number;
+    name: string;
+    buildingId: number;
 }
 
 // 表单规则
@@ -133,20 +109,13 @@ const buildingData = reactive({
     administrator: "",
     newApartment: "",
     apartments: [] as Apartment[],
+    administratorId: [],
 });
 
 // 宿舍列表的数据
 const buildingList = ref<any[]>([]);
 const apartmentList = ref<any[]>([]);
-
-function addApartment() {
-    buildingData.apartments.push({
-        id: 0,
-        buildingId: 0,
-        name: buildingData.newApartment,
-        students: [],
-    });
-}
+const userData = ref<User[]>([]);
 
 function deleteApartment(id: number) {
     const index = buildingData.apartments.findIndex(item => item.id === id);
@@ -163,7 +132,7 @@ function onEdit(id: number) {
         buildingData.id = matchingData.id;
         buildingData.name = matchingData.name;
         buildingData.apartments = matchingData.apartments;
-
+        buildingData.administratorId = matchingData.administratorId;
         isEditing.value = true;
         showDialog.value = true;
 
@@ -191,7 +160,8 @@ function deleteById(id: number) {
             ElMessage.success("删除成功")
             refreshData();
         }
-    });
+    })
+        .catch(err => console.log("获取数据失败"));
 }
 
 // 提交数据
@@ -210,8 +180,32 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
                 refreshData();
                 showDialog.value = false;
             }
-        });
+        })
+            .catch(err => console.log("获取数据失败"));
     });
+}
+
+// 显示输入框
+const inputVisible = ref(false)
+const InputRef = ref<InstanceType<typeof ElInput>>()
+const showApartmentNameInput = () => {
+    inputVisible.value = true
+    nextTick(() => {
+        InputRef.value!.input!.focus()
+    })
+}
+
+const handleInputConfirm = () => {
+    if (buildingData.newApartment) {
+        buildingData.apartments.push({
+        id: 0,
+        buildingId: 0,
+        name: buildingData.newApartment,
+        students: [],
+    })
+    }
+    inputVisible.value = false
+    buildingData.newApartment = ''
 }
 
 refreshData();
@@ -227,16 +221,48 @@ function refreshData() {
             buildingList.value = resp.data.data;
             tableData.value = resp.data.data;
         }
-    });
+
+        // 获取用户数据
+        axios.get("http://localhost:8088/api/user")
+            .then((resp) => {
+                if (resp.data.code != "200") {
+                    ElMessage.error("获取数据失败：" + resp.data.msg)
+                } else {
+                    userData.value = resp.data.data;
+                    getAdmin();
+                }
+            })
+            .catch(err => console.log("获取数据失败：" + err));
+
+    })
+        .catch(err => console.log("获取数据失败"));
 
     // 获取宿舍数据
-    axios.get("http://localhost:8088/api/apartment").then((resp) => {
-        if (resp.data.code != "200") {
-            ElMessage.error("获取数据失败：" + resp.data.msg)
-        } else {
-            apartmentList.value = resp.data.data;
-        }
-    });
+    axios.get("http://localhost:8088/api/apartment")
+        .then((resp) => {
+            if (resp.data.code != "200") {
+                ElMessage.error("获取数据失败：" + resp.data.msg)
+            } else {
+                apartmentList.value = resp.data.data;
+            }
+        })
+        .catch(err => console.log("获取数据失败"));
 
+
+
+}
+
+function getAdmin() {
+    console.log("开始获取列表");
+    tableData.value.forEach(building => {
+        building.administratorId = [];
+        building.administrator = "";
+        userData.value.forEach(user => {
+            if (user.buildingId == building.id) {
+                building.administratorId.push(user.id);
+                building.administrator += user.name + " ";
+            }
+        })
+    });
 }
 </script>
