@@ -35,7 +35,6 @@
         <!-- <el-button type="primary" :icon="Edit">批量编辑</el-button> -->
         <el-button type="primary" :icon="Delete">批量删除</el-button>
         <el-button type="primary" :icon="Plus" @click="showDialog = true">添加数据</el-button>
-        <el-button type="primary" :icon="Files" @click="startProgress">一键制单</el-button>
     </div>
 
     <br />
@@ -85,70 +84,31 @@
             </el-form-item>
 
             <el-form-item label="支付状态">
+                <el-label>
                     {{ apartmentData.billData.status ? apartmentData.billData.status : "账单未生成" }}
+                </el-label>
                 <el-button v-if="!apartmentData.billData.status" style="margin-left: 10px;">支付</el-button>
             </el-form-item>
+
+            <!-- <el-form-item label="证件照">
+            <el-upload
+              class="avatar-uploader"
+              action="/api/upload"
+              :headers="token"
+              name="image"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="stuData.image" :src="stuData.image" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item> -->
             <div>
                 <el-button type="primary" @click="onSubmit(editorFormRef)">提交</el-button>
                 <el-button @click="showDialog = false">取消</el-button>
             </div>
         </el-form>
-    </el-dialog>
-
-    <!-- 详情页面 -->
-    <el-dialog v-model="showDetailDialog" width="50%" @closed="dialogClosed" title="用量详情">
-        <el-form :model="usageDetail" label-width="80px">
-            <el-form-item label="楼栋名" prop="buildingDataItem">
-                <el-text> {{ usageDetail.buildingName }}</el-text>
-            </el-form-item>
-
-            <el-form-item label="房间号" prop="apartmentIdItem">
-                {{ usageDetail.apartmentName }}
-            </el-form-item>
-
-            <el-form-item label="类型" prop="typeItem">
-                {{ usageDetail.type }}
-            </el-form-item>
-
-            <el-form-item label="用量" prop="amountItem">
-                {{ usageDetail.amount }}
-            </el-form-item>
-
-            <el-form-item label="周期" prop="startTimeItem">
-                {{ usageDetail.startTimeFormat }} - {{ usageDetail.endTimeFormat }}
-            </el-form-item>
-            <el-divider></el-divider>
-            <el-form-item label="账单状态">
-                    {{ usageDetail.bill ? "账单已生成" : "账单未生成" }}
-                <el-button v-if="!usageDetail.bill" style="margin-left: 10px;">一键生成</el-button>
-            </el-form-item>
-            <div v-if="usageDetail.bill">
-                <el-form-item label="账单号">
-                    {{ usageDetail.bill.id }}
-                </el-form-item>
-                <el-form-item label="支付时间">
-                    {{ usageDetail.bill.payDate }}
-                </el-form-item>
-                <el-form-item label="补助额度">
-                    {{ usageDetail.bill.subsidy }}
-                </el-form-item>
-                <el-form-item label="单价">
-                    {{ usageDetail.bill.unitPrice }} 元
-                </el-form-item>
-                <el-form-item label="总计">
-                    {{ usageDetail.bill.total }} 元
-                </el-form-item>
-            </div>
-
-        </el-form>
-    </el-dialog>
-
-    <el-dialog v-model="showProgressDialog" width="60%" title="执行进度" :close-on-click-modal="false"
-        :close-on-press-escape="false" :show-close="false">
-        <el-progress :percentage="progress" style="margin-bottom: 8px;" />
-        {{ progressText }}
-        <br />
-        <el-button v-if="progress === 100" @click="showProgressDialog = false" style="margin-top: 8px;">关闭</el-button>
     </el-dialog>
 
     <el-table :data="tableData" border stripe height="370">
@@ -157,11 +117,12 @@
         <el-table-column prop="apartmentName" label="宿舍号" width="80" align="center" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="60" align="center" show-overflow-tooltip />
         <el-table-column prop="amount" label="用量" width="100" align="center" show-overflow-tooltip />
-        <el-table-column prop="startTime" label="开始时间" align="center" show-overflow-tooltip />
+        <el-table-column prop="subsidy" label="补贴额" align="100" show-overflow-tooltip />
+        <el-table-column prop="subsidy" label="补贴额" align="100" show-overflow-tooltip />
         <el-table-column prop="endTime" label="结束时间" align="center" show-overflow-tooltip />
-        <el-table-column align="center" label="操作" width="210">
+        <el-table-column align="center" label="操作" width="150">
             <template #default="scope">
-                <el-button type="default" size="small" @click="onDetail(scope.row)">详情</el-button>
+                <!-- <el-button type="default" size="small" @click="onEdit(scope.row.id)">状态</el-button> -->
                 <el-button type="default" size="small" @click="onEdit(scope.row.id)">编辑</el-button>
                 <el-button type="danger" size="small" @click="deleteById(scope.row.id)">删除</el-button>
             </template>
@@ -182,7 +143,6 @@ import {
     Search,
     Share,
     Upload,
-    Files,
 } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import { Alignment } from "element-plus/es/components/table-v2/src/constants";
@@ -209,9 +169,6 @@ interface Bill {
     date: string;
     payDate: string;
     payType: string;
-    unitPrice: number;
-    subsidy: number;
-    total: number;
 }
 
 // 表单规则
@@ -228,7 +185,6 @@ const editorRules = reactive<FormRules>({
 const tableData = ref<any[]>([]); // 传递给组件的 data 参数
 const showSelection = ref<boolean>(true); // 传递给组件的 showSelection 参数
 const showDialog = ref(false); // 控制对话框的显示与隐藏
-const showDetailDialog = ref(false); // 控制详情对话框的显示与隐藏
 const isEditing = ref(false); // 是否正在编辑
 const apartmentData = reactive({
     id: "",
@@ -243,20 +199,6 @@ const apartmentData = reactive({
     buildingData: {} as Building,
     billData: {} as Bill,
 });
-
-const usageDetail = ref({
-    id: "",
-    type: "",
-    amount: "",
-    startTime: "",
-    endTime: "",
-    startTimeFormat: "",
-    endTimeFormat: "",
-    buildingName: "",
-    apartmentName: "",
-    bill: {} as Bill,
-});
-
 const pagination = reactive({
     small: false,
     disabled: true,
@@ -278,14 +220,6 @@ const searchApartment = reactive({
     startTime: "",
     endTime: "",
 });
-
-const onDetail = (usage: any) => {
-    console.log(usage);
-    usageDetail.value = usage;
-    console.log(usage.buildingName);
-
-    showDetailDialog.value = true;
-}
 
 function onEdit(id: number) {
     const matchingData = tableData.value.find(item => item.id === id);
@@ -450,69 +384,4 @@ function refreshData(enablePagination: boolean = false) {
         }
     });
 }
-
-let socket: WebSocket | null = null;
-const progress = ref(0);
-const showProgressDialog = ref(false);
-const progressText = ref("");
-
-// Websoket连接成功事件
-const websocketonopen = (res: any) => {
-    console.log("WebSocket连接成功", res);
-};
-// Websoket接收消息事件
-const websocketonmessage = (res: any) => {
-    if (res.data == "连接成功") {
-        console.log("收到来自服务器的消息：", res.data);
-        progressText.value = "服务器正在执行中...（请不要关闭窗口）";
-        return;
-    }
-
-    if (res.data == "100") {
-        progressText.value = "服务器执行完毕";
-        progress.value = 100;
-        socket?.close();
-        return;
-    }
-
-    progress.value = res.data;
-};
-// Websoket连接错误事件
-const websocketonerror = (res: any) => {
-    console.log("连接错误", res);
-};
-// Websoket断开事件
-const websocketclose = (res: any) => {
-    console.log("断开连接", res);
-};
-const initWebSocket = (userid: number) => {
-    // ws地址 -->这里是你的请求路径
-    const wsuri = "ws://localhost:8088/wsServer/" + userid;
-    socket = new WebSocket(wsuri);
-    socket.onmessage = websocketonmessage;
-    socket.onopen = websocketonopen;
-    socket.onerror = websocketonerror;
-    socket.onclose = websocketclose;
-};
-
-
-const startProgress = () => {
-    showProgressDialog.value = true;
-    progress.value = 0;
-    progressText.value = "指令已向服务器下发，正在等待响应...（请不要关闭窗口）";
-    setTimeout(() => {
-        axios.get("/api/bill/generate").then((res) => {
-            if (res.data.code != "200") {
-                ElMessage.error("制单失败：" + res.data.msg)
-            } else {
-                ElMessage.success("一键制单成功")
-            }
-        });
-        axios.get("/api/user/current").then((res) => {
-            initWebSocket(res.data.data.id)
-        });
-    }, 3000);
-};
-
-
 </script>

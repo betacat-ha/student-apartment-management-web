@@ -169,7 +169,8 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
                 refreshData();
                 showDialog.value = false;
             }
-        });
+        })
+        .catch(err => console.log("获取数据失败"));
     });
 }
 
@@ -186,16 +187,18 @@ function refreshData() {
             buildingList.value = resp.data.data;
             
         }
-    });
+    })
+    .catch(err => console.log("获取数据失败"));
 
-    // 获取宿舍数据
+    // 获取用户数据
     axios.get("http://localhost:8088/api/user").then((resp) => {
         if (resp.data.code != "200") {
             ElMessage.error("获取数据失败：" + resp.data.msg)
         } else {
             tableData.value = resp.data.data;
         }
-    });
+    })
+    .catch(err => console.log("获取数据失败"));
 
 
 

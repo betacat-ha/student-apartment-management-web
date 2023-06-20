@@ -2,11 +2,12 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Welcome from "../components/admin/Welcome.vue";
 import AdminView from '../views/AdminView.vue'
 import StudentList from "../components/admin/student/StudentList.vue";
-import Login from '../components/Login.vue'
 import LoginView from '../views/LoginView.vue'
 import WAEUsage from '../components/admin/waterAndElectricity/WAEUsage.vue'
+import WAEBill from '@/components/admin/waterAndElectricity/WAEBill.vue'
 import BuildingList from '../components/admin/building/BuildingList.vue'
 import UserList from '../components/admin/user/UserList.vue'
+import StudentView from '@/views/StudentView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -39,6 +40,11 @@ const routes: Array<RouteRecordRaw> = [
         component: WAEUsage
       },
       {
+        path: "wae-bill",
+        name: "WAEBill",
+        component: WAEBill
+      },
+      {
         path: "building-list",
         name: "BuildingList",
         component: BuildingList
@@ -50,6 +56,12 @@ const routes: Array<RouteRecordRaw> = [
       }
     ]
   },
+  {
+    path: "/student",
+    name: "StudentView",
+    component:StudentView
+  },
+  
 
   
 

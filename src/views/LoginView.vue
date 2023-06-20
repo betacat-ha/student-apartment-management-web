@@ -19,7 +19,7 @@
                     <el-input v-model="form.password" />
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="submitForm(loginFormRef)">登录</el-button>
+                    <el-button type="primary" @click="submitForm(loginFormRef)" :loading="isloading">登录</el-button>
                     <el-link type="primary" @click="forgetPassword" style="margin-left: 8px">忘记密码？</el-link>
                 </el-form-item>
             </el-form>
@@ -41,7 +41,7 @@ const form = reactive({
     password: "",
 });
 
-var loading = false;
+const isloading = ref(false);
 
 // 表单规则
 const loginFormRef = ref<FormInstance>();
@@ -52,26 +52,19 @@ const rules = reactive<FormRules>({
 
 // 表单提交操作
 const submitForm = async (formEl: FormInstance | undefined) => {
+    isloading.value = true;
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
         if (valid) {
-            //   console.log(form);
-            // ElLoading.service({
-            //     lock: true,
-            //     text: "登录中...",
-            //     background: "rgba(0, 0, 0, 0.7)",
-            // });
             axios.post("http://localhost:8088/api/login", form).then((resp) => {
+                isloading.value = false;
                 if (resp.data.status != null) {
                     ElMessage.error('登录失败 - 系统内部错误')
-                    // ElLoading.service().close
                     return;
                 } else if (resp.data.code != '200') {
                     ElMessage.error('登录失败 - ' + resp.data.msg)
-                    // ElLoading.service().close
                     return;
                 }
-                // ElLoading.service().close
                 localStorage.setItem('token', resp.data.data)
                 router.push('/admin')
             });
@@ -95,7 +88,7 @@ function forgetPassword() {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%;
+    width: 60%;
     overflow: hidden;
 }
 

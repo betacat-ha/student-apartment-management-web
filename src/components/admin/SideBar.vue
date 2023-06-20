@@ -5,6 +5,10 @@
       class="el-menu-vertical-demo"
       router
     >
+    <el-menu-item index="/admin">
+      <el-icon><HomeFilled /></el-icon>
+      <span>首页</span>
+    </el-menu-item>
       <el-sub-menu index="1">
         <template #title>
           <el-icon><UserFilled /></el-icon>
@@ -29,14 +33,6 @@
           <el-menu-item index="/admin/building-list">楼宇管理</el-menu-item>
           <el-menu-item index="/admin/user-list">员工管理</el-menu-item>
       </el-sub-menu>
-      <el-menu-item index="3" disabled>
-        <el-icon><document /></el-icon>
-        <span>Navigator Three</span>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon><setting /></el-icon>
-        <span>Navigator Four</span>
-      </el-menu-item>
     </el-menu>
 </template>
 
@@ -47,6 +43,7 @@ Menu as IconMenu,
 Location,
 Setting,
 PieChart,
+HomeFilled,
 } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import axios from '@/http'

@@ -253,7 +253,8 @@ function deleteById(id: number) {
       ElMessage.success("删除成功")
       refreshData();
     }
-  });
+  })
+  .catch(err => console.log("获取数据失败"));
 }
 
 // 查询
@@ -273,7 +274,8 @@ function search() {
         tableData.value = resp.data.data;
         ElMessage.success("查询成功")
       }
-    });
+    })
+    .catch(err => console.log("获取数据失败"));
 }
 
 // 清空查询条件
@@ -299,7 +301,8 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         refreshData();
         showDialog.value = false;
       }
-    });
+    })
+    .catch(err => console.log("获取数据失败"));
   });
 }
 
@@ -326,15 +329,18 @@ function refreshData(enablePagination: boolean = false) {
       ElMessage.error("获取数据失败：" + resp.data.msg)
     }
     tableData.value = resp.data.data;
-  });
+  })
+  .catch(err => console.log("获取数据失败"));
 
   // 获取宿舍数据
-  axios.get("http://localhost:8088/api/building").then((resp) => {
+  axios.get("http://localhost:8088/api/building")
+  .then((resp) => {
     if (resp.data.code != "200") {
       ElMessage.error("获取数据失败：" + resp.data.msg)
     } else {
       buildingList.value = resp.data.data;
     }
-  });
+  })
+  .catch(err => console.log("获取数据失败"));
 }
 </script>
