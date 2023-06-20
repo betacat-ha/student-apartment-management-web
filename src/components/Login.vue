@@ -28,6 +28,7 @@ import { FormInstance, FormRules, ElLoading, ElMessage } from "element-plus";
 import { nextTick, reactive, ref } from "vue";
 import  router  from "../router";
 import axios from "axios";
+import store from "@/store";
 
 // 表单数据
 const form = reactive({
@@ -49,27 +50,18 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   await formEl.validate((valid, fields) => {
     if (valid) {
-      //   console.log(form);
-      ElLoading.service({
-        lock: true,
-        text: "登录中...",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
       axios.post("http://localhost:8088/api/login", form).then((resp) => {
         if (resp.data.status != null) {
             ElMessage('登录失败 - 系统内部错误')
-            ElLoading.service().close
             return;
         } else if (resp.data.code != '200') {
             ElMessage('登录失败 - ' + resp.data.msg)
-            ElLoading.service().close
             return;
         }
-        ElLoading.service().close
-        const {accessToken, userName} = resp.data.data
-        localStorage.setItem('token', accessToken)
-        localStorage.setItem('userName', userName)
-        router.push('/admin')
+        console.log(resp.data.data)
+        store.state.token = resp.data.data
+        localStorage.setItem('token', resp.data.data)
+        // router.push('/admin')
       });
     } else {
       console.log("error submit!");
