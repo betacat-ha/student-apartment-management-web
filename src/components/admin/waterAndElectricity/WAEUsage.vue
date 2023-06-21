@@ -511,7 +511,7 @@ const startProgress = () => {
         axios.get("/api/user/current").then((res) => {
             initWebSocket(res.data.data.id)
         });
-    }, 3000);
+    }, 2000);
 };
 
 

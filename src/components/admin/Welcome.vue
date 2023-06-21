@@ -1,4 +1,9 @@
 <template>
+    <!-- 详情页面 -->
+    <el-dialog v-model="showNoticeDetailDialog" width="50%" :title="editNotice.title">
+        <el-text>作者：{{ editNotice.authorName }} 时间：{{ editNotice.createTime }}</el-text>
+        <div style="white-space: pre-wrap; text-align: left;">{{ editNotice.content }}</div>
+    </el-dialog>
     <div style="display: flex; flex-direction: column;">
         <!-- <h1>
             👏欢迎使用
@@ -9,7 +14,7 @@
                 <el-col :span="8">
                     <el-tag effect="dark">{{ user?.roleId == 1 ? '超级管理员' : '宿舍管理员' }}</el-tag>
                 </el-col>
-                <el-col :span="30" :push="1">
+                <el-col :span="16" :push="1">
                     <el-label>{{ user?.name }}，欢迎你</el-label>
                 </el-col>
             </el-row>
@@ -24,7 +29,7 @@
                 <el-row v-for="notice in notices" :key="notice.id" style=" align-items: center; margin-bottom: 5px;">
                     <el-col :span="16" style="text-align: left;">
                         <el-tag :type="notice.tagType">{{ notice.tag }}</el-tag>
-                        <el-button type="text" link>{{ notice.title }}</el-button>
+                        <el-button type="text" @click="onShowNotice(notice)" link>{{ notice.title }}</el-button>
                     </el-col>
                     <el-col :span="8">
                         <el-label type="info">{{ notice.createTime }}</el-label>
@@ -63,7 +68,7 @@
 <script lang="ts" setup>
 import { ElAvatar } from "element-plus";
 import axios from "@/http";
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, reactive, ref } from "vue";
 
 interface User {
     id: number;
@@ -85,16 +90,28 @@ interface Notice {
 
 const user = ref<User>();
 const notices = ref<Notice[]>([]);
+const showNoticeDetailDialog = ref(false);
+
+const editNotice = reactive<Notice>({
+    id: 0,
+    title: "",
+    content: "",
+    authorName: "",
+    tag: "",
+    tagType: "",
+    createTime: "",
+    updateTime: "",
+})
 
 const refreshData = () => {
     axios.get("/api/user/current").then((res) => {
         user.value = res.data.data;
-    });
-
+    })
+    .catch(err => {console.log(err)});
     notices.value.push({
         id: 1,
         title: "关于启用东校区智能电控系统的通知",
-        content: "各位东校区的同学：<br/>你们好！为提高东校区用电的管理水平，保障用电安全，方便大家查询及缴纳电费，现定于2023年6月19日启用东校区智能电控系统，届时大家可通过学校企业微信-工作台-个人工具找到“智慧电控”这个应用来查询和缴纳电费。操作流程见附件一。<br/>请同学们6月21日前登录电控系统补交本学期以来所欠电费，6月22日起，电控系统将转为预付费模式，即先充值后用电模式，如房间没有剩余电量则自动断电。",
+        content: "\n各位东校区的同学：\n    你们好！为提高东校区用电的管理水平，保障用电安全，方便大家查询及缴纳电费，现定于2023年6月19日启用东校区智能电控系统，届时大家可通过学校企业微信-工作台-个人工具找到“智慧电控”这个应用来查询和缴纳电费。操作流程见附件一。\n    请同学们6月21日前登录电控系统补交本学期以来所欠电费，6月22日起，电控系统将转为预付费模式，即先充值后用电模式，如房间没有剩余电量则自动断电。",
         authorName: "后勤处 网络信息中心",
         tag: "紧急",
         tagType: "danger",
@@ -114,9 +131,23 @@ const refreshData = () => {
     });
 };
 
-refreshData();
+const onShowNotice = (notice: Notice) => {
+    editNotice.title = notice.title;
+    editNotice.authorName = notice.authorName;
+    editNotice.content = notice.content;
+    editNotice.createTime = notice.createTime;
+    showNoticeDetailDialog.value = true;
+}
+onMounted(() => {
 
+    refreshData();
 
+});
+
+onBeforeUnmount(()=> {
+    
+}
+)
 
 </script>
 
@@ -127,5 +158,8 @@ el-link {
     width: 20em;
     white-space: nowrap;
     overflow: hidden;
+}
+.tttt {
+  white-space: pre-wrap;
 }
 </style>

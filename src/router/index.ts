@@ -8,6 +8,7 @@ import WAEBill from '@/components/admin/waterAndElectricity/WAEBill.vue'
 import BuildingList from '../components/admin/building/BuildingList.vue'
 import UserList from '../components/admin/user/UserList.vue'
 import StudentView from '@/views/StudentView.vue'
+import ImportAndExport from '@/components/admin/student/ImportAndExport.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -53,6 +54,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "user-list",
         name: "UserList",
         component: UserList
+      },
+      {
+        path: "import-export",
+        name: "ImportAndExport",
+        component: ImportAndExport
       }
     ]
   },
