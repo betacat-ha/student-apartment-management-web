@@ -15,10 +15,16 @@
             </el-form-item>
 
             <el-form-item label="身份" prop="roleItem">
-                <!-- <el-tag v-for="item in userData.role" :key="item.id" class="mx-1" effect="light" closable
-                    @close="deleteApartment(item.id)">
-                    {{ item.name }}
-                </el-tag> -->
+                <el-select v-model="userData.role">
+                    <!-- <el-option
+                        v-for="item in roleList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                    ></el-option> -->
+                    <el-option label="超级管理员" value="1"></el-option>
+                    <el-option label="宿舍管理员" value="2"></el-option>
+                </el-select>
             </el-form-item>
 
             <el-form-item label="电话" prop="phoneItem">
