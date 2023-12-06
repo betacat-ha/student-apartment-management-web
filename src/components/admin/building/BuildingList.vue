@@ -153,7 +153,7 @@ function dialogClosed() {
 
 // 删除
 function deleteById(id: number) {
-    axios.delete("http://localhost:8088/api/building?id=" + id).then((resp) => {
+    axios.delete("/building?id=" + id).then((resp) => {
         if (resp.data.code != "200") {
             ElMessage.error("删除失败：" + resp.data.msg)
         } else {
@@ -171,7 +171,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         if (!valid) {
             return;
         }
-        axios.post("http://localhost:8088/api/building", buildingData).then((resp) => {
+        axios.post("/building", buildingData).then((resp) => {
             if (resp.data.code != "200") {
                 ElMessage.error(resp.data.msg);
                 refreshData();
@@ -213,7 +213,7 @@ refreshData();
 // 刷新数据
 function refreshData() {
     // 获取楼栋数据
-    axios.get("http://localhost:8088/api/building").then((resp) => {
+    axios.get("/building").then((resp) => {
         showSelection.value = true;
         if (resp.data.code != "200") {
             ElMessage.error("获取数据失败：" + resp.data.msg)
@@ -223,7 +223,7 @@ function refreshData() {
         }
 
         // 获取用户数据
-        axios.get("http://localhost:8088/api/user")
+        axios.get("/user")
             .then((resp) => {
                 if (resp.data.code != "200") {
                     ElMessage.error("获取数据失败：" + resp.data.msg)
@@ -238,7 +238,7 @@ function refreshData() {
         .catch(err => console.log("获取数据失败"));
 
     // 获取宿舍数据
-    axios.get("http://localhost:8088/api/apartment")
+    axios.get("/apartment")
         .then((resp) => {
             if (resp.data.code != "200") {
                 ElMessage.error("获取数据失败：" + resp.data.msg)

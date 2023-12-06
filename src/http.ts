@@ -64,6 +64,8 @@ axios.interceptors.response.use(
           type: 'error',
         });
         return Promise.reject(new Error(msg));
+      } else if (code >= 1000) { // 业务错误，交给具体页面处理
+        return Promise.resolve(res);
       } else if (code !== 200) {
         ElNotification.error({
           title: msg,
@@ -92,7 +94,7 @@ axios.interceptors.response.use(
     }
   );
 
-  axios.defaults.baseURL = "http://localhost:8088"  // 修改默认配置 请求根路径
+  axios.defaults.baseURL = "http://localhost:8088/api"  // 修改默认配置 请求根路径
 
 // 导出给 main.js 挂载
 export default axios;

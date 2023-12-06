@@ -23,7 +23,7 @@ const exportStudent = () => {
     const fileName = "学生数据.xlsx"
     axios({
         method: 'get',
-        url: 'http://localhost:8088/api/student/export',
+        url: '/student/export',
         responseType: 'blob',
         headers: {
             'access-control-allow-headers': 'Authorization, Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, X-Requested-By, If-Modified-Since, X-File-Name, X-File-Type, Cache-Control, Origin',

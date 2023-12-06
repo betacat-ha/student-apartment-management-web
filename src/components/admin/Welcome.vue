@@ -104,7 +104,7 @@ const editNotice = reactive<Notice>({
 })
 
 const refreshData = () => {
-    axios.get("/api/user/current").then((res) => {
+    axios.get("/user/current").then((res) => {
         user.value = res.data.data;
     })
     .catch(err => {console.log(err)});

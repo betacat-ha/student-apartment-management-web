@@ -56,7 +56,7 @@ import axios from '@/http'
 
 const showSysSetting = ref<boolean>(false);
 
-axios.get('/api/user/current').then((resp) => {
+axios.get('/user/current').then((resp) => {
   const data = resp.data.data;
   if (resp.data.code != "200") {
     return;

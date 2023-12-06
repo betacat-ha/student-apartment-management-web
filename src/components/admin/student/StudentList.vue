@@ -246,7 +246,7 @@ function handleCurrentChange() {
 
 // 删除
 function deleteById(id: number) {
-  axios.delete("http://localhost:8088/api/student?id=" + id).then((resp) => {
+  axios.delete("/student?id=" + id).then((resp) => {
     if (resp.data.code != "200") {
       ElMessage.error("删除失败：" + resp.data.msg)
     } else {
@@ -265,7 +265,7 @@ function search() {
   }
 
   // TODO: 根据查询条件查询数据
-  axios.get("http://localhost:8088/api/student/search?type=" + searchStu.type
+  axios.get("/student/search?type=" + searchStu.type
     + "&content=" + searchStu.content
     + "&gender=" + searchStu.gender).then((resp) => {
       if (resp.data.code != "200") {
@@ -293,7 +293,7 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
     if (!valid) {
       return;
     }
-    axios.post("http://localhost:8088/api/student", stuData).then((resp) => {
+    axios.post("/student", stuData).then((resp) => {
       if (resp.data.code != "200") {
         ElMessage.error("提交失败：" + resp.data.msg)
       } else {
@@ -316,7 +316,7 @@ refreshData();
 
 // 刷新数据
 function refreshData(enablePagination: boolean = false) {
-  var getStr = "http://localhost:8088/api/student"
+  var getStr = "/student"
   if (enablePagination) {
     getStr += "?page=" + pagination.currentPage + "&size=" + pagination.pageSize
   }
@@ -333,7 +333,7 @@ function refreshData(enablePagination: boolean = false) {
   .catch(err => console.log("获取数据失败"));
 
   // 获取宿舍数据
-  axios.get("http://localhost:8088/api/building")
+  axios.get("/building")
   .then((resp) => {
     if (resp.data.code != "200") {
       ElMessage.error("获取数据失败：" + resp.data.msg)

@@ -11,9 +11,9 @@ import axios from "./http"
 // 路由
 import router from "./router";
 
-axios.defaults.baseURL = "http://localhost:8088"  // 修改默认配置 请求根路径
+axios.defaults.baseURL = "http://localhost:8088/api"  // 修改默认配置 请求根路径
 
-const app = createApp(App).use(router)
+const app = createApp(App)
 app.config.globalProperties.$axios = axios
 
 app.config.errorHandler = function(error) {
