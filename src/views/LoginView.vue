@@ -7,8 +7,8 @@
         </div>
 
         <div class="login-form">
-            <el-form ref="loginFormRef" :model="form" label-width="120px" :rules="rules"
-                @keyup.enter.native="submitForm(loginFormRef)">
+            <el-form ref="loginFormRef" :model="form" label-width="120px" :rules="rules">
+                <!-- @keyup.enter.native="submitForm(loginFormRef)" -->
                 <el-form-item>
                     <h1 style="text-align: center;">登录</h1>
                 </el-form-item>
@@ -18,8 +18,11 @@
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="form.password" />
                 </el-form-item>
+                <div :style="{'display': isReadyToLogin ? 'none' : 'grid', 'justify-content': 'end', 'margin-bottom': '15px'}">
+                    <Verify mode="fixed" captchaType="blockPuzzle" @success="captchaOnSuccess"></Verify>
+                </div>
                 <el-form-item>
-                    <el-button type="primary" @click="submitForm(loginFormRef)" :loading="isloading">登录</el-button>
+                    <el-button type="primary" @click="submitForm(loginFormRef)" :loading="isloading" :disabled="!isReadyToLogin">登录</el-button>
                     <el-link type="primary" @click="forgetPassword" style="margin-left: 8px">忘记密码？</el-link>
                 </el-form-item>
             </el-form>
@@ -55,6 +58,7 @@ import { FormInstance, FormRules, ElLoading, ElMessage, ElMessageBox } from "ele
 import { nextTick, reactive, ref } from "vue";
 import router from "../router";
 import axios from "axios";
+import Verify from '@/components/verifition/Verify.vue'
 
 // 表单数据
 const form = reactive({
@@ -64,6 +68,7 @@ const form = reactive({
 });
 
 const isloading = ref(false);
+const isReadyToLogin = ref(false);
 
 // 表单规则
 const loginFormRef = ref<FormInstance>();
@@ -149,6 +154,11 @@ function countdown() {
             isGetCodeButtonDisabled.value = false
         }
     }, 1000)
+}
+
+function captchaOnSuccess(params:any) {
+    isReadyToLogin.value = true
+    form.verifyCode = params.captchaVerification
 }
 
 </script>
