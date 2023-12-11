@@ -21,6 +21,7 @@ app.config.errorHandler = function(error) {
 };
 app.use(ElementPlus)
 app.use(router)
+// 注册所有 element-plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }

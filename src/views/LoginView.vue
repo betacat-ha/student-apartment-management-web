@@ -2,7 +2,7 @@
     <div class="login-container">
         <div style="flex: 1;">
             <div style=" fit: cover;">
-                <el-image src="https://s1.ax1x.com/2023/06/16/pCM1W3q.png" />
+                <el-image :src="require('@/assets/Background/Blackchain.png')" />
             </div>
         </div>
 
@@ -16,40 +16,23 @@
                     <el-input v-model="form.email" autofocus />
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
-                    <el-input v-model="form.password" />
+                    <el-input v-model="form.password" type="password"/>
                 </el-form-item>
                 <div :style="{'display': isReadyToLogin ? 'none' : 'grid', 'justify-content': 'end', 'margin-bottom': '15px'}">
                     <Verify mode="fixed" captchaType="blockPuzzle" @success="captchaOnSuccess"></Verify>
                 </div>
                 <el-form-item>
                     <el-button type="primary" @click="submitForm(loginFormRef)" :loading="isloading" :disabled="!isReadyToLogin">登录</el-button>
-                    <el-link type="primary" @click="forgetPassword" style="margin-left: 8px">忘记密码？</el-link>
+                    <el-link type="primary" @click="dialogVisible = true" style="margin-left: 8px">忘记密码？</el-link>
                 </el-form-item>
             </el-form>
         </div>
 
     </div>
 
-    <!-- 验证码对话框 -->
-    <el-dialog v-model="dialogVisible" title="安全验证" width="30%" :before-close="handleClose">
-        <div>
-            <span>为了您的帐户安全，本次登录需要验证码！</span>
-            <el-input v-model="form.verifyCode" placeholder="输入验证码">
-                <template #append>
-                    <el-button @click="getVerifyCode" :disabled="isGetCodeButtonDisabled">{{ getCodeButton }}</el-button>
-                </template>
-            </el-input>
-            <!-- 服务器返回的提示 -->
-
-        </div>
-        <template #footer>
-            <span class="dialog-footer">
-                <!-- <el-button @click="dialogVisible = false">取消</el-button> -->
-                <el-button type="primary" @click="submitForm(loginFormRef)">
-                    验证
-                </el-button>
-            </span>
-        </template>
+    <!-- 重置密码对话框 -->
+    <el-dialog v-model="dialogVisible" title="重置密码" width="40%" :before-close="handleClose">
+        <changePassword :email="form.email" style="padding-right: 50px;" @success="dialogVisible = false"/>
     </el-dialog>
 </template>
 
@@ -59,6 +42,7 @@ import { nextTick, reactive, ref } from "vue";
 import router from "../router";
 import axios from "axios";
 import Verify from '@/components/verifition/Verify.vue'
+import changePassword from '@/components/user/ChangePassword.vue'
 
 // 表单数据
 const form = reactive({
@@ -84,7 +68,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
         if (valid) {
-            axios.post("/login", form).then((resp) => {
+            axios.post("/auth/login", form).then((resp) => {
                 isloading.value = false;
                 if (resp.data.status != null) {
                     ElMessage.error('登录失败 - 系统内部错误')
@@ -109,11 +93,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     });
 };
 
-// 忘记密码操作
-function forgetPassword() {
-    ElMessage.info("请联系管理员重置密码！");
-}
-
 // 安全验证模块
 const dialogVisible = ref(false)
 
@@ -123,43 +102,11 @@ const handleClose = (done: () => void) => {
     done()
 }
 
-// 获取验证码
-function getVerifyCode() {
-    axios.get('/validate/backendSend4Login.do').then(resp => {
-        if (resp.data.status != null) {
-            ElMessage.error('获取失败 - 系统内部错误')
-            return;
-        } else if (resp.data.code != '200') {
-            ElMessage.error('获取失败 - ' + resp.data.msg)
-            return;
-        } else {
-            countdown()
-            ElMessage.success('获取成功')
-        }
-    })
-}
-
-// 获取验证码倒计时
-const getCodeButton = ref('获取验证码')
-const isGetCodeButtonDisabled = ref(false)
-function countdown() {
-    isGetCodeButtonDisabled.value = true
-    let count = 60
-    const timer = setInterval(() => {
-        count--
-        getCodeButton.value = count + 's'
-        if (count <= 0) {
-            clearInterval(timer)
-            getCodeButton.value = '获取验证码'
-            isGetCodeButtonDisabled.value = false
-        }
-    }, 1000)
-}
-
 function captchaOnSuccess(params:any) {
     isReadyToLogin.value = true
     form.verifyCode = params.captchaVerification
 }
+
 
 </script>
 

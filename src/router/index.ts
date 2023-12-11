@@ -9,6 +9,7 @@ import BuildingList from '../components/admin/building/BuildingList.vue'
 import UserList from '../components/admin/user/UserList.vue'
 import StudentView from '@/views/StudentView.vue'
 import ImportAndExport from '@/components/admin/student/ImportAndExport.vue'
+import ChangePasswordView from '@/views/user/ChangePasswordView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -59,6 +60,17 @@ const routes: Array<RouteRecordRaw> = [
         path: "import-export",
         name: "ImportAndExport",
         component: ImportAndExport
+      },
+      {
+        path: "setting",
+        name: "SettingView",
+        children: [
+          {
+            path: "change-pwd",
+            name: "ChangePassword",
+            component: ChangePasswordView
+          }
+        ]
       }
     ]
   },

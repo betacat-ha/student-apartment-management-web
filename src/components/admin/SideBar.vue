@@ -33,18 +33,17 @@
           <el-menu-item index="/admin/building-list">楼栋管理</el-menu-item>
           <el-menu-item index="/admin/user-list">员工管理</el-menu-item>
       </el-sub-menu>
+      <el-sub-menu index="99">
+        <template #title>
+          <el-icon><User /></el-icon>
+          <span>个人设置</span>
+        </template>
+          <el-menu-item index="/admin/setting/change-pwd">修改密码</el-menu-item>
+      </el-sub-menu>
     </el-menu>
 </template>
 
 <script lang="ts" setup>
-import {
-Document,
-Menu as IconMenu,
-Location,
-Setting,
-PieChart,
-HomeFilled,
-} from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import axios from '@/http'
 // const handleOpen = (key: string, keyPath: string[]) => {

@@ -118,7 +118,7 @@
         <el-table-column prop="type" label="类型" width="60" align="center" show-overflow-tooltip />
         <el-table-column prop="amount" label="用量" width="100" align="center" show-overflow-tooltip />
         <el-table-column prop="subsidy" label="补贴额" align="100" show-overflow-tooltip />
-        <el-table-column prop="subsidy" label="补贴额" align="100" show-overflow-tooltip />
+        <el-table-column prop="startTime" label="开始时间" align="100" show-overflow-tooltip />
         <el-table-column prop="endTime" label="结束时间" align="center" show-overflow-tooltip />
         <el-table-column align="center" label="操作" width="150">
             <template #default="scope">
