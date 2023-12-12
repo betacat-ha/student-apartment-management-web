@@ -117,6 +117,7 @@
         <el-table-column prop="apartmentName" label="宿舍号" width="80" align="center" show-overflow-tooltip />
         <el-table-column prop="type" label="类型" width="60" align="center" show-overflow-tooltip />
         <el-table-column prop="amount" label="用量" width="100" align="center" show-overflow-tooltip />
+        <el-table-column prop="unitPrice" label="单价" align="100" show-overflow-tooltip />
         <el-table-column prop="subsidy" label="补贴额" align="100" show-overflow-tooltip />
         <el-table-column prop="startTime" label="开始时间" align="100" show-overflow-tooltip />
         <el-table-column prop="endTime" label="结束时间" align="center" show-overflow-tooltip />
@@ -360,7 +361,7 @@ refreshData();
 
 // 刷新数据
 function refreshData(enablePagination: boolean = false) {
-    var getStr = "http://localhost:8088/api/usage"
+    var getStr = "/usage"
     if (enablePagination) {
         getStr += "?page=" + pagination.currentPage + "&size=" + pagination.pageSize
     }
@@ -376,7 +377,7 @@ function refreshData(enablePagination: boolean = false) {
     });
 
     // 获取宿舍数据
-    axios.get("http://localhost:8088/api/building").then((resp) => {
+    axios.get("/building").then((resp) => {
         if (resp.data.code != "200") {
             ElMessage.error("获取数据失败：" + resp.data.msg)
         } else {

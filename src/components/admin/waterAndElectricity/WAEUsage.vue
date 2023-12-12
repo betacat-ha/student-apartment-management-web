@@ -486,8 +486,8 @@ const websocketclose = (res: any) => {
     console.log("断开连接", res);
 };
 const initWebSocket = (userid: number) => {
-    // ws地址 -->这里是你的请求路径
-    const wsuri = "ws://localhost:8088/wsServer/" + userid;
+    // ws地址
+    const wsuri = "ws://localhost:8088/api/wsServer/" + userid;
     socket = new WebSocket(wsuri);
     socket.onmessage = websocketonmessage;
     socket.onopen = websocketonopen;
@@ -501,14 +501,14 @@ const startProgress = () => {
     progress.value = 0;
     progressText.value = "指令已向服务器下发，正在等待响应...（请不要关闭窗口）";
     setTimeout(() => {
-        axios.get("/api/bill/generate").then((res) => {
+        axios.get("/bill/generate").then((res) => {
             if (res.data.code != "200") {
                 ElMessage.error("制单失败：" + res.data.msg)
             } else {
                 ElMessage.success("一键制单成功")
             }
         });
-        axios.get("/api/user/current").then((res) => {
+        axios.get("/user/current").then((res) => {
             initWebSocket(res.data.data.id)
         });
     }, 2000);
