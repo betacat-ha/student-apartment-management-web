@@ -9,7 +9,7 @@
             👏欢迎使用
         </h1> -->
         <div style="display: flex; align-items: center; justify-content: left;">
-            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" :size="100" />
+            <el-avatar :src="require('@/assets/avatar/03b0d39583f48206768a7534e55bcpng.png')" :size="100" />
             <el-row style="margin-left: 10px;">
                 <el-col :span="8">
                     <el-tag effect="dark">{{ user?.roleId == 1 ? '超级管理员' : '宿舍管理员' }}</el-tag>
