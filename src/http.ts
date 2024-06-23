@@ -54,7 +54,7 @@ axios.interceptors.response.use(
         return res.data;
       }
       // token过期
-      if (msg === 'NOT_LOGIN') {
+      if (msg === 'NOT_LOGIN' || code === 401) {
         res.data.msg = '登录已过期，请重新登录！';
         location.href = '/login';
         return Promise.reject('无效的会话，或者会话已过期，请重新登录。');

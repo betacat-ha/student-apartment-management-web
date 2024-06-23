@@ -40,6 +40,7 @@
 import { FormInstance, FormRules, ElLoading, ElMessage, ElMessageBox } from "element-plus";
 import { nextTick, reactive, ref } from "vue";
 import router from "../router";
+import store from '@/store/index'
 import axios from "axios";
 import Verify from '@/components/verifition/Verify.vue'
 import changePassword from '@/components/user/ChangePassword.vue'
@@ -71,7 +72,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             axios.post("/auth/login", form).then((resp) => {
                 isloading.value = false;
                 if (resp.data.status != null) {
-                    ElMessage.error('登录失败 - 系统内部错误')
                     return;
                 } else if (resp.data.code == '4001') {
                     // 显示验证码对话框
@@ -81,11 +81,17 @@ const submitForm = async (formEl: FormInstance | undefined) => {
                     ElMessage.error('登录失败 - ' + resp.data.msg)
                     return;
                 }
+
+                // 保存Token数据
                 localStorage.setItem('token', resp.data.data)
+                store.state.token = resp.data.data
+
                 router.push('/admin')
+
+                
             }).catch(err => {
                 isloading.value = false;
-                ElMessage.error('登录失败 - 系统内部错误')
+                // ElMessage.error('登录失败 - 系统内部错误')
             })
         } else {
             console.log("error submit!");
