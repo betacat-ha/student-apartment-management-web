@@ -10,18 +10,23 @@
   <img src="img/Building.png"/>
 </div>
 
+## 配套项目
+
+Java后端：https://github.com/betacat-ha/student-apartment-management-system
+
+iOS端：https://github.com/betacat-ha/student-apartment-management-system-ios
 
 ## 项目部署 Project setup
 ```
-npm install
+pnpm install
 ```
 
 ### 开发环境构建 Compiles and hot-reloads for development
 ```
-npm run serve
+pnpm run serve
 ```
 
 ### 生产环境构建 Compiles and minifies for production
 ```
-npm run build
+pnpm run build
 ```
