@@ -51,11 +51,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       axios.post("http://localhost:8088/api/login", form).then((resp) => {
-        if (resp.data.status != null) {
-            ElMessage('登录失败 - 系统内部错误')
-            return;
-        } else if (resp.data.code != '200') {
-            ElMessage('登录失败 - ' + resp.data.msg)
+        if (resp.data.code != '200') {
             return;
         }
         console.log(resp.data.data)

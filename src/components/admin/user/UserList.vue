@@ -15,15 +15,9 @@
             </el-form-item>
 
             <el-form-item label="身份" prop="roleItem">
-                <el-select v-model="userData.role">
-                    <!-- <el-option
-                        v-for="item in roleList"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                    ></el-option> -->
-                    <el-option label="超级管理员" value="1"></el-option>
-                    <el-option label="宿舍管理员" value="2"></el-option>
+                <el-select v-model="userData.roleId">
+                    <el-option label="超级管理员" value="1" key="1"></el-option>
+                    <el-option label="宿舍管理员" value="2" key="2"></el-option>
                 </el-select>
             </el-form-item>
 
@@ -89,6 +83,11 @@ interface Apartment {
     students: any;
 }
 
+interface role {
+    id: number;
+    name: String;
+}
+
 // 表单规则
 const editorFormRef = ref<FormInstance>();
 const editorRules = reactive<FormRules>({
@@ -111,12 +110,16 @@ const userData = reactive({
     phone: "",
     email: "",
     role: [] as Apartment[],
+    roleId: 0,
 });
 
 // 宿舍列表的数据
 const buildingList = ref<any[]>([]);
 
-const roleList = ref<any[]>([]);
+const roleList = ref<role[]>([
+    { id: 1, name: "超级管理员" },
+    { id: 2, name: "宿舍管理员" },
+]);
 
 function onEdit(id: number) {
     const matchingData = tableData.value.find(item => item.id === id);
@@ -127,6 +130,7 @@ function onEdit(id: number) {
         userData.role = matchingData.role;
         userData.phone = matchingData.phone;
         userData.email = matchingData.email;
+        userData.roleId = matchingData.roleIds
 
         isEditing.value = true;
         showDialog.value = true;
